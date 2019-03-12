@@ -1,7 +1,7 @@
 import {shuffleArray} from './util.js';
 import {createElement} from './create-element.js';
 
-class FilmNoConrtols {
+class Film {
   constructor(data) {
     this._title = data.title;
     this._picture = data.picture;
@@ -12,15 +12,10 @@ class FilmNoConrtols {
     this._genre = data.genre;
     this._comments = data.comments;
 
-    this._element = null;
-  }
+    this._onCommentsClick = this._onCommentsClick.bind(this);
 
-  _getTitle() {
-    let title = ``;
-    this._title.forEach((item) => {
-      title += item[Math.floor(Math.random() * item.length)];
-    });
-    return title;
+    this._element = null;
+    this._onClick = null;
   }
 
   _getDescription() {
@@ -30,11 +25,18 @@ class FilmNoConrtols {
       .join(`. `);
   }
 
+  _onCommentsClick(evt) {
+    evt.preventDefault();
+    return typeof this._onClick === `function` && this._onClick();
+  }
+
+  set onClick(fn) {
+    this._onClick = fn;
+  }
+
   get template() {
     return `
-      <article
-        class="film-card film-card--no-controls">
-        <h3 class="film-card__title">${this._getTitle()}</h3>
+        <h3 class="film-card__title">${this._title}</h3>
         <p class="film-card__rating">${this._rating}</p>
         <p class="film-card__info">
           <span class="film-card__year">${this._year}</span>
@@ -46,7 +48,11 @@ class FilmNoConrtols {
           ${this._getDescription()}
         </p>
         <button class="film-card__comments">${this._comments} comments</button>
-      </article>
+        <form class="film-card__controls">
+          <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist"><!--Add to watchlist--> WL</button>
+          <button class="film-card__controls-item button film-card__controls-item--mark-as-watched"><!--Mark as watched-->WTCHD</button>
+          <button class="film-card__controls-item button film-card__controls-item--favorite"><!--Mark as favorite-->FAV</button>
+        </form>
     `;
   }
 
@@ -54,14 +60,26 @@ class FilmNoConrtols {
     return this._element;
   }
 
+  bind() {
+    this._element.querySelector(`.film-card__comments`)
+        .addEventListener(`click`, this._onCommentsClick);
+  }
+
+  unbind() {
+    this._element.querySelector(`.film-card__comments`)
+        .removeEventListener(`click`, this._onCommentsClick);
+  }
+
   render() {
-    this._element = createElement(this.template);
-    // this.bind();
+    this._element = createElement(this.template, `article`, [`film-card`]);
+    this.bind();
     return this._element;
   }
 
   unrender() {
-    // this.unbind();
+    this.unbind();
     this._element = null;
   }
 }
+
+export {Film};

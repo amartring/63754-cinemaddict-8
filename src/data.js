@@ -15,10 +15,12 @@ const getRatings = () => {
 
 export default () => ({
   title: [
-    [`Pikachu `, `Bigfoot `, `Stranger `, `Mr. President `, `House M.D. `],
-    [`killed someone `, `fell in love `, `slipped `, `got lost `, `fought `],
-    [`in the mountains`, `in NY`, `on the moon`, `in the attic`, `in the cave`],
-  ],
+    `Pikachu got lost in NY`,
+    `Bigfoot slipped on the moon`,
+    `Stranger killed someone in the cave`,
+    `Mr. President fell in love in the mountains`,
+    `House M.D. fought in the attic`,
+  ][Math.floor(Math.random() * 5)],
   picture: [
     `accused`,
     `blackmail`,
