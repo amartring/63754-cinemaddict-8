@@ -65,11 +65,9 @@ FILTERS.reverse().forEach((item) =>
 const getData = (count, data) => new Array(count).fill(``).map(() => data());
 
 const getCardsArray = (data, Constructor) => {
-  const array = [];
-  data.forEach((item) => {
-    array.push(new Constructor(item));
-  });
-  return array;
+  const cards = [];
+  data.forEach((item) => cards.push(new Constructor(item)));
+  return cards;
 };
 
 const renderCards = (cards, container) => cards.forEach((item) => container.appendChild(item.render()));
