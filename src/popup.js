@@ -1,8 +1,8 @@
-import {shuffleArray} from './util.js';
-import {createElement} from './create-element.js';
+import Component from './component.js';
 
-export default class Popup {
+export default class Popup extends Component {
   constructor(data) {
+    super();
     this._title = data.title;
     this._picture = data.picture;
     this._description = data.description;
@@ -14,15 +14,10 @@ export default class Popup {
 
     this._onCloseClick = this._onCloseClick.bind(this);
 
-    this._element = null;
     this._onClick = null;
-  }
 
-  _getDescription() {
-    return shuffleArray(this._description
-      .split(`.`))
-      .splice(Math.floor(Math.random() * 8), Math.floor(1 + Math.random() * 2))
-      .join(`. `);
+    this._htmlElement = `section`;
+    this._classNames = [`film-details`];
   }
 
   _onCloseClick(evt) {
@@ -92,9 +87,7 @@ export default class Popup {
               </tr>
             </table>
 
-            <p class="film-details__film-description">
-              ${this._getDescription()}
-            </p>
+            <p class="film-details__film-description">${this._description}</p>
           </div>
         </div>
 
@@ -201,10 +194,6 @@ export default class Popup {
     `;
   }
 
-  get element() {
-    return this._element;
-  }
-
   bind() {
     this._element.querySelector(`.film-details__close-btn`)
         .addEventListener(`click`, this._onCloseClick);
@@ -213,16 +202,5 @@ export default class Popup {
   unbind() {
     this._element.querySelector(`.film-details__close-btn`)
         .removeEventListener(`click`, this._onCloseClick);
-  }
-
-  render() {
-    this._element = createElement(this.template, `section`, [`film-details`]);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
   }
 }

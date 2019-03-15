@@ -1,7 +1,8 @@
-import {createElement} from './create-element.js';
+import Component from './component.js';
 
-export default class Film {
+export default class Film extends Component {
   constructor(data) {
+    super();
     this._title = data.title;
     this._picture = data.picture;
     this._description = data.description;
@@ -13,8 +14,10 @@ export default class Film {
 
     this._onCommentsClick = this._onCommentsClick.bind(this);
 
-    this._element = null;
     this._onClick = null;
+
+    this._htmlElement = `article`;
+    this._classNames = [`film-card`];
   }
 
   _onCommentsClick(evt) {
@@ -36,9 +39,7 @@ export default class Film {
           <span class="film-card__genre">${this._genre}</span>
         </p>
         <img src="./images/posters/${this._picture}.jpg" alt="" class="film-card__poster">
-        <p class="film-card__description">
-          ${this._description}
-        </p>
+        <p class="film-card__description">${this._description}</p>
         <button class="film-card__comments">${this._comments} comments</button>
         <form class="film-card__controls">
           <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist"><!--Add to watchlist--> WL</button>
@@ -46,10 +47,6 @@ export default class Film {
           <button class="film-card__controls-item button film-card__controls-item--favorite"><!--Mark as favorite-->FAV</button>
         </form>
     `;
-  }
-
-  get element() {
-    return this._element;
   }
 
   bind() {
@@ -61,16 +58,5 @@ export default class Film {
     this._element.querySelector(`.film-card__comments`)
         .removeEventListener(`click`, this._onCommentsClick);
     this._onClick = null;
-  }
-
-  render() {
-    this._element = createElement(this.template, `article`, [`film-card`]);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
   }
 }

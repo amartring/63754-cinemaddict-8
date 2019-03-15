@@ -1,7 +1,8 @@
-import {createElement} from './create-element.js';
+import Component from './component.js';
 
-export default class FilmExtra {
+export default class FilmExtra extends Component {
   constructor(data) {
+    super();
     this._title = data.title;
     this._picture = data.picture;
     this._description = data.description;
@@ -13,9 +14,12 @@ export default class FilmExtra {
 
     this._onCommentsClick = this._onCommentsClick.bind(this);
 
-    this._element = null;
     this._onClick = null;
+
+    this._htmlElement = `div`;
+    this._classNames = [`film-card`, `film-card--no-controls`];
   }
+
   _onCommentsClick(evt) {
     evt.preventDefault();
     return typeof this._onClick === `function` && this._onClick();
@@ -35,15 +39,9 @@ export default class FilmExtra {
         <span class="film-card__genre">${this._genre}</span>
       </p>
       <img src="./images/posters/${this._picture}.jpg" alt="" class="film-card__poster">
-      <p class="film-card__description">
-        ${this._description}
-      </p>
+      <p class="film-card__description">${this._description}</p>
       <button class="film-card__comments">${this._comments} comments</button>
     `;
-  }
-
-  get element() {
-    return this._element;
   }
 
   bind() {
@@ -55,16 +53,5 @@ export default class FilmExtra {
     this._element.querySelector(`.film-card__comments`)
         .removeEventListener(`click`, this._onCommentsClick);
     this._onClick = null;
-  }
-
-  render() {
-    this._element = createElement(this.template, `div`, [`film-card`, `film-card--no-controls`]);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
   }
 }
