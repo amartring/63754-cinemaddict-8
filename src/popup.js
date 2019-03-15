@@ -1,7 +1,7 @@
 import {shuffleArray} from './util.js';
 import {createElement} from './create-element.js';
 
-class FilmDetails {
+export default class Popup {
   constructor(data) {
     this._title = data.title;
     this._picture = data.picture;
@@ -226,5 +226,3 @@ class FilmDetails {
     this._element = null;
   }
 }
-
-export {FilmDetails};

@@ -1,7 +1,6 @@
-import {shuffleArray} from './util.js';
 import {createElement} from './create-element.js';
 
-class Film {
+export default class Film {
   constructor(data) {
     this._title = data.title;
     this._picture = data.picture;
@@ -16,13 +15,6 @@ class Film {
 
     this._element = null;
     this._onClick = null;
-  }
-
-  _getDescription() {
-    return shuffleArray(this._description
-      .split(`.`))
-      .splice(Math.floor(Math.random() * 8), Math.floor(1 + Math.random() * 2))
-      .join(`. `);
   }
 
   _onCommentsClick(evt) {
@@ -45,7 +37,7 @@ class Film {
         </p>
         <img src="./images/posters/${this._picture}.jpg" alt="" class="film-card__poster">
         <p class="film-card__description">
-          ${this._getDescription()}
+          ${this._description}
         </p>
         <button class="film-card__comments">${this._comments} comments</button>
         <form class="film-card__controls">
@@ -68,6 +60,7 @@ class Film {
   unbind() {
     this._element.querySelector(`.film-card__comments`)
         .removeEventListener(`click`, this._onCommentsClick);
+    this._onClick = null;
   }
 
   render() {
@@ -81,5 +74,3 @@ class Film {
     this._element = null;
   }
 }
-
-export {Film};
