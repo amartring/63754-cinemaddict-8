@@ -1,7 +1,9 @@
 import {getRandomNumber} from './util.js';
-import makeFilter from './make-filter.js';
-import makeCard from './make-card.js';
+import {FilmDetails} from './film-details.js';
+import {FilmExtra} from './film-extra.js';
+import {Film} from './film.js';
 import getFilm from './data.js';
+import makeFilter from './make-filter.js';
 
 const FILTERS = [
   {
@@ -33,14 +35,32 @@ const cardsCount = {
   MAX: 10
 };
 
+const body = document.querySelector(`body`);
 const filtersContainer = document.querySelector(`.main-navigation`);
-const filmsContainers = document.querySelectorAll(`.films-list__container`);
+const filmsContainer = document.querySelector(`.films`);
+const filmLists = filmsContainer.querySelectorAll(`.films-list__container`);
 
-const createCards = (container, count, isControls) => {
-  container.insertAdjacentHTML(`beforeend`, new Array(count)
-    .fill(``)
-    .map(() => makeCard(getFilm(), isControls))
-    .join(``));
+let Films = {
+  main: {
+    list: filmLists[0],
+    data: [],
+    component: [],
+    popup: [],
+  },
+
+  rated: {
+    list: filmLists[1],
+    data: [],
+    component: [],
+    popup: [],
+  },
+
+  commented: {
+    list: filmLists[2],
+    data: [],
+    component: [],
+    popup: [],
+  },
 };
 
 const updateCards = () => {
@@ -50,8 +70,8 @@ const updateCards = () => {
     evt.preventDefault();
     const target = evt.target;
     const count = getRandomNumber(cardsCount.MIN, cardsCount.MAX);
-    filmsContainers[0].innerHTML = ``;
-    createCards(filmsContainers[0], count, true);
+    Films.main.list.innerHTML = ``;
+    createCards(Films.main, Film, count);
     filters.forEach((item) => {
       item.classList.remove(`main-navigation__item--active`);
     });
@@ -67,10 +87,52 @@ FILTERS.reverse().forEach((item) => {
   filtersContainer.insertAdjacentHTML(`afterbegin`, makeFilter(item.name, item.count, item.isActive));
 });
 
-createCards(filmsContainers[0], filmsCount.COMMON, true);
+const getData = (count, data) => {
+  return new Array(count)
+  .fill(``)
+  .map(() => data());
+};
 
-for (let i = 1; i < filmsContainers.length; i++) {
-  createCards(filmsContainers[i], filmsCount.EXTRA, false);
-}
+const getCardsArray = (data, Constructor) => {
+  let array = [];
+  data.forEach((item) => {
+    array.push(new Constructor(item));
+  });
+  return array;
+};
+
+const renderCards = (array, container) => {
+  for (const item of array) {
+    container.appendChild(item.render());
+  }
+};
+
+const addListeners = (component, popup) => {
+  component.forEach((item, i) => {
+    component[i].onClick = () => {
+      body.appendChild(popup[i].render());
+    };
+  });
+
+  popup.forEach((item) => {
+    item.onClick = () => {
+      const elem = body.querySelector(`.film-details`);
+      body.removeChild(elem);
+      item.unrender();
+    };
+  });
+};
+
+const createCards = (film, Class, count) => {
+  film.data = getData(count, getFilm);
+  film.component = getCardsArray(film.data, Class);
+  film.popup = getCardsArray(film.data, FilmDetails);
+  renderCards(film.component, film.list);
+  addListeners(film.component, film.popup);
+};
+
+createCards(Films.main, Film, filmsCount.COMMON);
+createCards(Films.rated, FilmExtra, filmsCount.EXTRA);
+createCards(Films.commented, FilmExtra, filmsCount.EXTRA);
 
 updateCards();
