@@ -93,26 +93,26 @@ const createCards = (count) => {
   const mainComponent = getCardsArray(mainData, Film);
   const mainPopup = getCardsArray(mainData, Popup);
 
-  const commentedData = mainData.slice()
-                                        .sort((left, right) => right.comments - left.comments)
-                                        .slice(0, 2);
-  const commentedComponent = getCardsArray(commentedData, FilmExtra);
-  const commentedPopup = getCardsArray(commentedData, Popup);
-
   const ratedData = mainData.slice()
                                     .sort((left, right) => Number(right.rating) - Number(left.rating))
                                     .slice(0, 2);
   const ratedComponent = getCardsArray(ratedData, FilmExtra);
   const ratedPopup = getCardsArray(ratedData, Popup);
 
+  const commentedData = mainData.slice()
+                                        .sort((left, right) => right.comments - left.comments)
+                                        .slice(0, 2);
+  const commentedComponent = getCardsArray(commentedData, FilmExtra);
+  const commentedPopup = getCardsArray(commentedData, Popup);
+
   renderCards(mainComponent, mainList);
   addListeners(mainComponent, mainPopup);
 
-  renderCards(commentedComponent, commentedList);
-  addListeners(commentedComponent, commentedPopup);
-
   renderCards(ratedComponent, ratedList);
   addListeners(ratedComponent, ratedPopup);
+
+  renderCards(commentedComponent, commentedList);
+  addListeners(commentedComponent, commentedPopup);
 };
 
 createCards(FILMS_COUNT);
