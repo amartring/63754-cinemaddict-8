@@ -1,8 +1,8 @@
-import {shuffleArray} from './util.js';
-import {createElement} from './create-element.js';
+import Component from './component.js';
 
-class FilmExtra {
+export default class FilmExtra extends Component {
   constructor(data) {
+    super();
     this._title = data.title;
     this._picture = data.picture;
     this._description = data.description;
@@ -14,15 +14,10 @@ class FilmExtra {
 
     this._onCommentsClick = this._onCommentsClick.bind(this);
 
-    this._element = null;
     this._onClick = null;
-  }
 
-  _getDescription() {
-    return shuffleArray(this._description
-      .split(`.`))
-      .splice(Math.floor(Math.random() * 8), Math.floor(1 + Math.random() * 2))
-      .join(`. `);
+    this._htmlElement = `div`;
+    this._classNames = [`film-card`, `film-card--no-controls`];
   }
 
   _onCommentsClick(evt) {
@@ -44,15 +39,9 @@ class FilmExtra {
         <span class="film-card__genre">${this._genre}</span>
       </p>
       <img src="./images/posters/${this._picture}.jpg" alt="" class="film-card__poster">
-      <p class="film-card__description">
-        ${this._getDescription()}
-      </p>
+      <p class="film-card__description">${this._description}</p>
       <button class="film-card__comments">${this._comments} comments</button>
     `;
-  }
-
-  get element() {
-    return this._element;
   }
 
   bind() {
@@ -63,18 +52,6 @@ class FilmExtra {
   unbind() {
     this._element.querySelector(`.film-card__comments`)
         .removeEventListener(`click`, this._onCommentsClick);
-  }
-
-  render() {
-    this._element = createElement(this.template, `div`, [`film-card`, `film-card--no-controls`]);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
+    this._onClick = null;
   }
 }
-
-export {FilmExtra};

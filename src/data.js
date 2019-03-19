@@ -1,4 +1,22 @@
-import {getRandomNumber} from './util';
+import {shuffleArray, getRandomNumber} from './util';
+
+const getDescription = () => {
+  const description = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      Cras aliquet varius magna, non porta ligula feugiat eget.
+                      Fusce tristique felis at fermentum pharetra.
+                      Aliquam id orci ut lectus varius viverra.
+                      Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.
+                      Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.
+                      Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.
+                      Sed sed nisi sed augue convallis suscipit in sed felis.
+                      Aliquam erat volutpat.
+                      Nunc fermentum tortor ac porta dapibus.
+                      In rutrum ac purus sit amet tempus`;
+  return shuffleArray(description
+    .split(`.`))
+    .splice(Math.floor(Math.random() * 8), Math.floor(1 + Math.random() * 3))
+    .join(`. `);
+};
 
 const getRatings = () => {
   const interval = {
@@ -29,17 +47,7 @@ export default () => ({
     `moonrise`,
     `three-friends`,
   ][Math.floor(Math.random() * 6)],
-  description: `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Cras aliquet varius magna, non porta ligula feugiat eget.
-                Fusce tristique felis at fermentum pharetra.
-                Aliquam id orci ut lectus varius viverra.
-                Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.
-                Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.
-                Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.
-                Sed sed nisi sed augue convallis suscipit in sed felis.
-                Aliquam erat volutpat.
-                Nunc fermentum tortor ac porta dapibus.
-                In rutrum ac purus sit amet tempus`,
+  description: getDescription(),
   rating: getRatings()[Math.floor(Math.random() * 34)],
   year: getRandomNumber(1940, 2018),
   duration: [`1:30`, `1:40`, `1:50`, `2:00`, `2:10`][Math.floor(Math.random() * 5)],

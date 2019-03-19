@@ -1,8 +1,8 @@
-import {shuffleArray} from './util.js';
-import {createElement} from './create-element.js';
+import Component from './component.js';
 
-class Film {
+export default class Film extends Component {
   constructor(data) {
+    super();
     this._title = data.title;
     this._picture = data.picture;
     this._description = data.description;
@@ -14,15 +14,10 @@ class Film {
 
     this._onCommentsClick = this._onCommentsClick.bind(this);
 
-    this._element = null;
     this._onClick = null;
-  }
 
-  _getDescription() {
-    return shuffleArray(this._description
-      .split(`.`))
-      .splice(Math.floor(Math.random() * 8), Math.floor(1 + Math.random() * 2))
-      .join(`. `);
+    this._htmlElement = `article`;
+    this._classNames = [`film-card`];
   }
 
   _onCommentsClick(evt) {
@@ -44,9 +39,7 @@ class Film {
           <span class="film-card__genre">${this._genre}</span>
         </p>
         <img src="./images/posters/${this._picture}.jpg" alt="" class="film-card__poster">
-        <p class="film-card__description">
-          ${this._getDescription()}
-        </p>
+        <p class="film-card__description">${this._description}</p>
         <button class="film-card__comments">${this._comments} comments</button>
         <form class="film-card__controls">
           <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist"><!--Add to watchlist--> WL</button>
@@ -54,10 +47,6 @@ class Film {
           <button class="film-card__controls-item button film-card__controls-item--favorite"><!--Mark as favorite-->FAV</button>
         </form>
     `;
-  }
-
-  get element() {
-    return this._element;
   }
 
   bind() {
@@ -68,18 +57,6 @@ class Film {
   unbind() {
     this._element.querySelector(`.film-card__comments`)
         .removeEventListener(`click`, this._onCommentsClick);
-  }
-
-  render() {
-    this._element = createElement(this.template, `article`, [`film-card`]);
-    this.bind();
-    return this._element;
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
+    this._onClick = null;
   }
 }
-
-export {Film};
