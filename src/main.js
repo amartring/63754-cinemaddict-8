@@ -2,7 +2,7 @@ import {getRandomNumber} from './util.js';
 import FilmExtra from './film-extra.js';
 import Film from './film.js';
 import Popup from './popup.js';
-import getFilm from './data.js';
+import film from './data.js';
 import makeFilter from './make-filter.js';
 
 const FILTERS = [
@@ -87,7 +87,7 @@ const addListeners = (component, popup) => {
 };
 
 const createCards = (count) => {
-  const mainData = getData(count, getFilm);
+  const mainData = getData(count, film);
   const mainComponent = getCardsArray(mainData, Film);
   const mainPopup = getCardsArray(mainData, Popup);
 

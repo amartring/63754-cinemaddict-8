@@ -1,5 +1,11 @@
 import Component from './component.js';
 
+const Emoji = {
+  sleeping: `😴`,
+  neutral: `😐`,
+  grinning: `😀`,
+};
+
 export default class Popup extends Component {
   constructor(data) {
     super();
@@ -13,6 +19,8 @@ export default class Popup extends Component {
     this._comments = data.comments;
 
     this._onCloseClick = this._onCloseClick.bind(this);
+    this._onEmojiClick = this._onEmojiClick.bind(this);
+    this._onCtrlEnterPress = this._onCtrlEnterPress.bind(this);
 
     this._onClick = null;
 
@@ -25,8 +33,49 @@ export default class Popup extends Component {
     return typeof this._onClick === `function` && this._onClick();
   }
 
+  _onEmojiClick(evt) {
+    const target = evt.target;
+    const emojiField = document.querySelector(`.film-details__add-emoji-label`);
+    emojiField.innerText = Emoji[target.value];
+  }
+
+  _onCtrlEnterPress(evt) {
+    const commentsList = document.querySelector(`.film-details__comments-list`);
+    const commentField = document.querySelector(`.film-details__comment-input`);
+    const emojiField = document.querySelector(`.film-details__add-emoji-label`);
+    const comment = {
+      emoji: emojiField.innerHTML,
+      text: commentField.value,
+      author: `Super Duper Alice Cooper`,
+      date: `right now`,
+    };
+    if (evt.ctrlKey && evt.keyCode === 13 && commentField.value) {
+      commentsList.insertAdjacentHTML(`beforeend`, this._commentTemplate(comment));
+      this._comments++;
+    }
+  }
+
+  _commentTemplate(comment) {
+    return `
+      <li class="film-details__comment">
+        <span class="film-details__comment-emoji">${comment.emoji}</span>
+        <div>
+          <p class="film-details__comment-text">${comment.text}</p>
+          <p class="film-details__comment-info">
+            <span class="film-details__comment-author">${comment.author}</span>
+            <span class="film-details__comment-day">${comment.date}</span>
+          </p>
+        </div>
+      </li>
+    `;
+  }
+
   set onClick(fn) {
     this._onClick = fn;
+  }
+
+  set template(inner) {
+    this._template = inner;
   }
 
   get template() {
@@ -122,18 +171,18 @@ export default class Popup extends Component {
 
           <div class="film-details__new-comment">
             <div>
-              <label for="add-emoji" class="film-details__add-emoji-label">😐</label>
+              <label for="add-emoji" class="film-details__add-emoji-label">${Emoji.neutral}</label>
               <input type="checkbox" class="film-details__add-emoji visually-hidden" id="add-emoji">
 
               <div class="film-details__emoji-list">
                 <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-                <label class="film-details__emoji-label" for="emoji-sleeping">😴</label>
+                <label class="film-details__emoji-label" for="emoji-sleeping">${Emoji.sleeping}</label>
 
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-neutral-face" value="neutral-face" checked>
-                <label class="film-details__emoji-label" for="emoji-neutral-face">😐</label>
+                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-neutral-face" value="neutral" checked>
+                <label class="film-details__emoji-label" for="emoji-neutral-face">${Emoji.neutral}</label>
 
                 <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-grinning" value="grinning">
-                <label class="film-details__emoji-label" for="emoji-grinning">😀</label>
+                <label class="film-details__emoji-label" for="emoji-grinning">${Emoji.grinning}</label>
               </div>
             </div>
             <label class="film-details__comment-label">
@@ -197,6 +246,12 @@ export default class Popup extends Component {
   bind() {
     this._element.querySelector(`.film-details__close-btn`)
         .addEventListener(`click`, this._onCloseClick);
+
+    const emojes = this._element.querySelectorAll(`.film-details__emoji-item`);
+    emojes.forEach((emoji) => emoji.addEventListener(`click`, this._onEmojiClick));
+
+    this._element.querySelector(`.film-details__new-comment`)
+        .addEventListener(`keydown`, this._onCtrlEnterPress);
   }
 
   unbind() {
