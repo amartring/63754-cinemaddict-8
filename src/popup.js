@@ -89,7 +89,7 @@ export default class Popup extends Component {
       newComment.text = commentField.value;
       newComment.author = `Super Duper Alice Cooper`;
       newComment.emoji = this._element.querySelector(`.film-details__emoji-item:checked + label`).textContent;
-      newComment.date = moment();
+      newComment.date = moment().toDate();
 
       this._comments.push(newComment);
       this._commentsCount++;

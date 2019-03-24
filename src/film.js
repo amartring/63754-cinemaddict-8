@@ -26,6 +26,10 @@ export default class Film extends Component {
     return typeof this._onClick === `function` && this._onClick();
   }
 
+  _partialUpdate() {
+    this._element.querySelector(`.film-card__comments span`).textContent = this._commentsCount;
+  }
+
   set onClick(fn) {
     this._onClick = fn;
   }
@@ -43,7 +47,7 @@ export default class Film extends Component {
         </p>
         <img src="./images/posters/${this._picture}.jpg" alt="" class="film-card__poster">
         <p class="film-card__description">${this._description}</p>
-        <button class="film-card__comments">${this._commentsCount} comments</button>
+        <button class="film-card__comments"><span>${this._commentsCount}</span> comments</button>
         <form class="film-card__controls">
           <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist"><!--Add to watchlist--> WL</button>
           <button class="film-card__controls-item button film-card__controls-item--mark-as-watched"><!--Mark as watched-->WTCHD</button>
@@ -69,5 +73,7 @@ export default class Film extends Component {
     this._isOnWatchlist = data.isOnWatchlist;
     this._isWatched = data.isWatched;
     this._isFavorite = data.isFavorite;
+
+    this._partialUpdate();
   }
 }

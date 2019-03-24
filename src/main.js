@@ -65,8 +65,6 @@ FILTERS.reverse().forEach((item) =>
 const getData = (count, data) => new Array(count).fill(``).map(() => data());
 
 const renderCards = (data, Constructor, container) => {
-  const fragment = document.createDocumentFragment();
-
   data.forEach((item) => {
     const filmComponent = new Constructor(item);
 
@@ -83,9 +81,8 @@ const renderCards = (data, Constructor, container) => {
       body.appendChild(popupComponent.element);
     };
 
-    fragment.appendChild(filmComponent.render());
+    container.appendChild(filmComponent.render());
   });
-  container.appendChild(fragment);
 };
 
 const createCards = (count) => {
