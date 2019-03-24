@@ -2,7 +2,7 @@ import {getRandomNumber} from './util.js';
 import FilmExtra from './film-extra.js';
 import Film from './film.js';
 import Popup from './popup.js';
-import getFilm from './data.js';
+import film from './data.js';
 import makeFilter from './make-filter.js';
 
 const FILTERS = [
@@ -64,53 +64,39 @@ FILTERS.reverse().forEach((item) =>
 
 const getData = (count, data) => new Array(count).fill(``).map(() => data());
 
-const getCardsArray = (data, Constructor) => {
-  const cards = [];
-  data.forEach((item) => cards.push(new Constructor(item)));
-  return cards;
-};
+const renderCards = (data, Constructor, container) => {
+  data.forEach((item) => {
+    const filmComponent = new Constructor(item);
 
-const renderCards = (cards, container) => cards.forEach((item) => container.appendChild(item.render()));
+    filmComponent.onClick = () => {
+      const popupComponent = new Popup(item);
 
-const addListeners = (component, popup) => {
-  component.forEach((item, i) => {
-    component[i].onClick = () => body.appendChild(popup[i].render());
-  });
+      popupComponent.onClose = (newObject) => {
+        filmComponent.update((Object.assign(item, newObject)));
+        body.removeChild(popupComponent.element);
+        popupComponent.unrender();
+      };
 
-  popup.forEach((item) => {
-    item.onClick = () => {
-      const elem = body.querySelector(`.film-details`);
-      body.removeChild(elem);
-      item.unrender();
+      popupComponent.render();
+      body.appendChild(popupComponent.element);
     };
+
+    container.appendChild(filmComponent.render());
   });
 };
 
 const createCards = (count) => {
-  const mainData = getData(count, getFilm);
-  const mainComponent = getCardsArray(mainData, Film);
-  const mainPopup = getCardsArray(mainData, Popup);
-
+  const mainData = getData(count, film);
   const ratedData = mainData.slice()
-                                    .sort((left, right) => Number(right.rating) - Number(left.rating))
-                                    .slice(0, 2);
-  const ratedComponent = getCardsArray(ratedData, FilmExtra);
-  const ratedPopup = getCardsArray(ratedData, Popup);
-
+                            .sort((left, right) => Number(right.rating) - Number(left.rating))
+                            .slice(0, 2);
   const commentedData = mainData.slice()
-                                        .sort((left, right) => right.comments - left.comments)
-                                        .slice(0, 2);
-  const commentedComponent = getCardsArray(commentedData, FilmExtra);
-  const commentedPopup = getCardsArray(commentedData, Popup);
+                                .sort((left, right) => right.comments - left.comments)
+                                .slice(0, 2);
 
-  renderCards(mainComponent, mainList);
-  addListeners(mainComponent, mainPopup);
-
-  renderCards(ratedComponent, ratedList);
-  addListeners(ratedComponent, ratedPopup);
-
-  renderCards(commentedComponent, commentedList);
-  addListeners(commentedComponent, commentedPopup);
+  renderCards(mainData, Film, mainList);
+  renderCards(ratedData, FilmExtra, ratedList);
+  renderCards(commentedData, FilmExtra, commentedList);
 };
 
 createCards(FILMS_COUNT);
