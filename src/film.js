@@ -13,7 +13,14 @@ export default class Film extends Component {
     this._genre = data.genre;
     this._commentsCount = data.commentsCount;
 
+    this._isOnWatchlist = data.isOnWatchlist;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
+
     this._onCommentsClick = this._onCommentsClick.bind(this);
+    this._onWatchlistChange = this._onWatchlistChange.bind(this);
+    this._onWatchedChange = this._onWatchedChange.bind(this);
+    this._onFavoriteChange = this._onFavoriteChange.bind(this);
 
     this._onClick = null;
 
@@ -23,11 +30,36 @@ export default class Film extends Component {
 
   _onCommentsClick(evt) {
     evt.preventDefault();
-    return typeof this._onClick === `function` && this._onClick();
+    const newData = {
+      isOnWatchlist: this._isOnWatchlist,
+      isWatched: this._isWatched,
+      isFavorite: this._isFavorite,
+    };
+
+    if (typeof this._onClick === `function`) {
+      this._onClick(newData);
+    }
+
+    this.update(newData);
   }
 
   _partialUpdate() {
     this._element.querySelector(`.film-card__comments span`).textContent = this._commentsCount;
+  }
+
+  _onWatchlistChange(evt) {
+    evt.preventDefault();
+    this._isOnWatchlist = !this._isOnWatchlist;
+  }
+
+  _onWatchedChange(evt) {
+    evt.preventDefault();
+    this._isWatched = !this._isWatched;
+  }
+
+  _onFavoriteChange(evt) {
+    evt.preventDefault();
+    this._isFavorite = !this._isFavorite;
   }
 
   set onClick(fn) {
@@ -59,11 +91,23 @@ export default class Film extends Component {
   bind() {
     this._element.querySelector(`.film-card__comments`)
         .addEventListener(`click`, this._onCommentsClick);
+    this._element.querySelector(`.film-card__controls-item--add-to-watchlist`)
+        .addEventListener(`click`, this._onWatchlistChange);
+    this._element.querySelector(`.film-card__controls-item--mark-as-watched`)
+        .addEventListener(`click`, this._onWatchedChange);
+    this._element.querySelector(`.film-card__controls-item--favorite`)
+        .addEventListener(`click`, this._onFavoriteChange);
   }
 
   unbind() {
     this._element.querySelector(`.film-card__comments`)
         .removeEventListener(`click`, this._onCommentsClick);
+    this._element.querySelector(`.film-card__controls-item--add-to-watchlist`)
+        .removeEventListener(`click`, this._onWatchlistChange);
+    this._element.querySelector(`.film-card__controls-item--mark-as-watched`)
+        .removeEventListener(`click`, this._onWatchedChange);
+    this._element.querySelector(`.film-card__controls-item--favorite`)
+        .removeEventListener(`click`, this._onFavoriteChange);
     this._onClick = null;
   }
 

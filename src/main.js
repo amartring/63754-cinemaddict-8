@@ -64,12 +64,13 @@ FILTERS.reverse().forEach((item) =>
 
 const getData = (count, data) => new Array(count).fill(``).map(() => data());
 
-const renderCards = (data, Constructor, container) => {
+const renderCards = (data, FilmConstructor, container) => {
   data.forEach((item) => {
-    const filmComponent = new Constructor(item);
+    const filmComponent = new FilmConstructor(item);
 
-    filmComponent.onClick = () => {
+    filmComponent.onClick = (newObj) => {
       const popupComponent = new Popup(item);
+      popupComponent.update((Object.assign(item, newObj)));
 
       popupComponent.onClose = (newObject) => {
         filmComponent.update((Object.assign(item, newObject)));
