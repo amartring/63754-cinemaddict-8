@@ -54,7 +54,7 @@ const getRatings = () => {
 
 const getDate = () => `${getRandomNumber(1986, 2010)}-${getRandomNumber(1, 12)}-${getRandomNumber(1, 28)}`;
 
-export default () => ({
+const film = () => ({
   title: [
     `The Shawshank Redemption`,
     `The Green Mile`,
@@ -133,3 +133,28 @@ export default () => ({
   isWatched: false,
   isFavorite: false,
 });
+
+const filters = [
+  {
+    name: `All movies`,
+    count: null,
+    isActive: true,
+  },
+  {
+    name: `Watchlist`,
+    count: 13,
+    isActive: false,
+  },
+  {
+    name: `History`,
+    count: 4,
+    isActive: false,
+  },
+  {
+    name: `Favorites`,
+    count: 8,
+    isActive: false,
+  }
+];
+
+export {film, filters};
