@@ -28,12 +28,13 @@ export default class Filter extends Component {
 
   get template() {
     return `
+    <div>
       <a href="#${this._name.toLowerCase().split(` `).slice(0, 1)}"
         class="main-navigation__item ${this._isActive && ` main-navigation__item--active`}">
         ${this._name}
         ${this._count && `<span class="main-navigation__item-count">${this._count}</span>`}
       </a>
-    `;
+    </div>`.trim();
   }
 
   bind() {

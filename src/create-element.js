@@ -1,8 +1,7 @@
-const createElement = (template, elem, classNames) => {
-  const newElement = document.createElement(elem);
-  classNames.forEach((item) => newElement.classList.add(item));
+const createElement = (template) => {
+  const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
-  return newElement;
+  return newElement.firstChild;
 };
 
 export {createElement};

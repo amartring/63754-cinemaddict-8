@@ -22,7 +22,7 @@ export default class Component {
   unbind() {}
 
   render() {
-    this._element = createElement(this.template, this._htmlElement, this._classNames);
+    this._element = createElement(this.template);
     this.bind();
     return this._element;
   }

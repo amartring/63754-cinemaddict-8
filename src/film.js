@@ -50,16 +50,61 @@ export default class Film extends Component {
   _onWatchlistChange(evt) {
     evt.preventDefault();
     this._isOnWatchlist = !this._isOnWatchlist;
+    const newData = {
+      isOnWatchlist: this._isOnWatchlist,
+      isWatched: this._isWatched,
+      isFavorite: this._isFavorite,
+    };
+
+    if (typeof this._onAddToWatchList === `function`) {
+      this._onAddToWatchList(newData);
+    }
+
+    this.update(newData);
   }
 
   _onWatchedChange(evt) {
     evt.preventDefault();
     this._isWatched = !this._isWatched;
+    const newData = {
+      isOnWatchlist: this._isOnWatchlist,
+      isWatched: this._isWatched,
+      isFavorite: this._isFavorite,
+    };
+
+    if (typeof this._onMarkAsWatched === `function`) {
+      this._onMarkAsWatched(newData);
+    }
+
+    this.update(newData);
   }
 
   _onFavoriteChange(evt) {
     evt.preventDefault();
     this._isFavorite = !this._isFavorite;
+    const newData = {
+      isOnWatchlist: this._isOnWatchlist,
+      isWatched: this._isWatched,
+      isFavorite: this._isFavorite,
+    };
+
+    if (typeof this._onMarkAsFavorite === `function`) {
+      this._onMarkAsFavorite(newData);
+    }
+
+    this.update(newData);
+  }
+
+  set onAddToWatchList(fn) {
+    this._onAddToWatchList = fn;
+  }
+
+  set onMarkAsWatched(fn) {
+    this._onMarkAsWatched = fn;
+  }
+
+  set onMarkAsFavorite(fn) {
+    this._onMarkAsFavorite = fn;
   }
 
   set onClick(fn) {
@@ -68,6 +113,7 @@ export default class Film extends Component {
 
   get template() {
     return `
+      <article class="film-card">
         <h3 class="film-card__title">${this._title}</h3>
         <p class="film-card__rating">${this._rating}</p>
         <p class="film-card__info">
@@ -85,7 +131,7 @@ export default class Film extends Component {
           <button class="film-card__controls-item button film-card__controls-item--mark-as-watched"><!--Mark as watched-->WTCHD</button>
           <button class="film-card__controls-item button film-card__controls-item--favorite"><!--Mark as favorite-->FAV</button>
         </form>
-    `;
+      </article>`.trim();
   }
 
   bind() {

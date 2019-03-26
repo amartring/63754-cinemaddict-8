@@ -137,7 +137,7 @@ const film = () => ({
 const filters = [
   {
     name: `All movies`,
-    count: null,
+    count: ``,
     isActive: true,
   },
   {

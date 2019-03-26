@@ -85,6 +85,19 @@ const renderCards = (data, FilmConstructor, container) => {
       body.appendChild(popupComponent.element);
     };
 
+    filmComponent.onAddToWatchList = (newObj) => {
+      filmComponent.update((Object.assign(item, newObj)));
+    };
+
+    filmComponent.onMarkAsWatched = (newObj) => {
+      filmComponent.update((Object.assign(item, newObj)));
+    };
+
+    filmComponent.onMarkAsFavorite = (newObj) => {
+      filmComponent.update((Object.assign(item, newObj)));
+    };
+
+
     container.appendChild(filmComponent.render());
   });
 };
@@ -126,7 +139,7 @@ const renderFilters = (filtersData, tasksData) => {
     filterComponent.onFilter = () => {
       const filteredFilms = filterTasks(tasksData, filterComponent._name);
       mainList.innerHTML = ``;
-      renderCards(filteredFilms);
+      renderCards(filteredFilms, Film, mainList);
     };
 
     filtersContainer.appendChild(filterComponent.render());
