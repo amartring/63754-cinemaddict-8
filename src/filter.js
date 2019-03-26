@@ -13,9 +13,16 @@ export default class Filter extends Component {
     this._onFilter = null;
   }
 
+  _partialUpdate() {
+    this._element.innerHTML = this.template;
+  }
+
   _onFilterClick(evt) {
     evt.preventDefault();
     this._isActive = !this._isActive;
+    this.unbind();
+    this._partialUpdate();
+    this.bind();
 
     if (typeof this._onFilter === `function`) {
       this._onFilter();

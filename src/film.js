@@ -28,6 +28,19 @@ export default class Film extends Component {
     this._classNames = [`film-card`];
   }
 
+  _processForm() {
+    return {
+      commentsCount: this._commentsCount,
+      isOnWatchlist: this._isOnWatchlist,
+      isWatched: this._isWatched,
+      isFavorite: this._isFavorite,
+    };
+  }
+
+  _partialUpdate() {
+    this._element.querySelector(`.film-card__comments span`).textContent = this._commentsCount;
+  }
+
   _onCommentsClick(evt) {
     evt.preventDefault();
     const newData = {
@@ -43,18 +56,10 @@ export default class Film extends Component {
     this.update(newData);
   }
 
-  _partialUpdate() {
-    this._element.querySelector(`.film-card__comments span`).textContent = this._commentsCount;
-  }
-
   _onWatchlistChange(evt) {
     evt.preventDefault();
     this._isOnWatchlist = !this._isOnWatchlist;
-    const newData = {
-      isOnWatchlist: this._isOnWatchlist,
-      isWatched: this._isWatched,
-      isFavorite: this._isFavorite,
-    };
+    const newData = this._processForm();
 
     if (typeof this._onAddToWatchList === `function`) {
       this._onAddToWatchList(newData);
@@ -66,11 +71,7 @@ export default class Film extends Component {
   _onWatchedChange(evt) {
     evt.preventDefault();
     this._isWatched = !this._isWatched;
-    const newData = {
-      isOnWatchlist: this._isOnWatchlist,
-      isWatched: this._isWatched,
-      isFavorite: this._isFavorite,
-    };
+    const newData = this._processForm();
 
     if (typeof this._onMarkAsWatched === `function`) {
       this._onMarkAsWatched(newData);
@@ -82,11 +83,7 @@ export default class Film extends Component {
   _onFavoriteChange(evt) {
     evt.preventDefault();
     this._isFavorite = !this._isFavorite;
-    const newData = {
-      isOnWatchlist: this._isOnWatchlist,
-      isWatched: this._isWatched,
-      isFavorite: this._isFavorite,
-    };
+    const newData = this._processForm();
 
     if (typeof this._onMarkAsFavorite === `function`) {
       this._onMarkAsFavorite(newData);
