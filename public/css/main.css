@@ -130,6 +130,7 @@ a:hover {
 .main-navigation {
   border-bottom: solid 2px var(--outline-color);
   display: flex;
+  align-items: center;
   flex-basis: 100%;
   font-size: var(--font-size-bigger);
   font-weight: 800;
