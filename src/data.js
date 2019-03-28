@@ -108,6 +108,7 @@ const film = () => ({
   description: getDescription(),
   rating: getRatings()[Math.floor(Math.random() * 34)],
   userRating: getRandomNumber(1, 9),
+  userDate: Date.now() - getRandomNumber(0, 13) * 30 * 24 * 60 * 60 * 1000,
   date: getDate(),
   duration: getRandomNumber(5280000, 11700000),
   genre: [

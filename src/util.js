@@ -12,4 +12,21 @@ const shuffleArray = (array) => {
   return array;
 };
 
-export {getRandomNumber, shuffleArray};
+const objectToSortedArray = (object) => {
+  const arrayOfProperties = Object.keys(object).map((key) => [key, object[key]]);
+  const compare = (firstCount, secondCount) => secondCount[1] - firstCount[1];
+  return arrayOfProperties.sort(compare);
+};
+
+const rank = {
+  comedy: `Harley Quinn`,
+  biopic: `Librarian`,
+  thriller: `Thrill-seeker`,
+  drama: `William Shakespeare`,
+  fantasy: `Illusionist`,
+  detective: `Hercule Poirot`,
+  cartoon: `Bugs Bunny`,
+  crime: `Malefactor`,
+};
+
+export {getRandomNumber, shuffleArray, objectToSortedArray, rank};

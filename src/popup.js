@@ -9,6 +9,7 @@ export default class Popup extends Component {
     this._description = data.description;
     this._rating = data.rating;
     this._userRating = data.userRating;
+    this._userDate = data.userDate;
     this._date = data.date;
     this._duration = data.duration;
     this._genre = data.genre;

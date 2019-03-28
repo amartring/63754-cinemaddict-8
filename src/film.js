@@ -9,6 +9,7 @@ export default class Film extends Component {
     this._description = data.description;
     this._rating = data.rating;
     this._date = data.date;
+    this._userDate = data.userDate;
     this._duration = data.duration;
     this._genre = data.genre;
     this._commentsCount = data.commentsCount;
@@ -124,9 +125,15 @@ export default class Film extends Component {
         <p class="film-card__description">${this._description}</p>
         <button class="film-card__comments"><span>${this._commentsCount}</span> comments</button>
         <form class="film-card__controls">
-          <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist"><!--Add to watchlist--> WL</button>
-          <button class="film-card__controls-item button film-card__controls-item--mark-as-watched"><!--Mark as watched-->WTCHD</button>
-          <button class="film-card__controls-item button film-card__controls-item--favorite"><!--Mark as favorite-->FAV</button>
+          <button
+            class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${this._isOnWatchlist && `film-card__controls-item--active`}">
+              <!--Add to watchlist--> WL</button>
+          <button
+            class="film-card__controls-item button film-card__controls-item--mark-as-watched ${this._isWatched && `film-card__controls-item--active`}">
+              <!--Mark as watched-->WTCHD</button>
+          <button
+            class="film-card__controls-item button film-card__controls-item--favorite ${this._isFavorite && `film-card__controls-item--active`}">
+              <!--Mark as favorite-->FAV</button>
         </form>
       </article>`.trim();
   }

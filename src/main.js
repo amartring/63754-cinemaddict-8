@@ -2,14 +2,17 @@ import Film from './film.js';
 import FilmExtra from './film-extra.js';
 import Popup from './popup.js';
 import Filter from './filter.js';
+import Statistic from './statistic.js';
 import {film, filters} from './data.js';
 
-const FILMS_COUNT = 7;
+const FILMS_COUNT = 20;
 
 const body = document.querySelector(`body`);
-const filtersContainer = document.querySelector(`.main-navigation`);
-const filmsContainer = document.querySelector(`.films`);
+const filtersContainer = body.querySelector(`.main-navigation`);
+const filmsContainer = body.querySelector(`.films`);
 const filmLists = filmsContainer.querySelectorAll(`.films-list__container`);
+const statsLink = body.querySelector(`.main-navigation__item--additional`);
+const statsContainer = body.querySelector(`.statistic`);
 
 const mainList = filmLists[0];
 const ratedList = filmLists[1];
@@ -89,6 +92,8 @@ const renderFilters = (filtersData, tasksData) => {
     const filterComponent = new Filter(item);
 
     filterComponent.onFilter = () => {
+      filmsContainer.classList.remove(`visually-hidden`);
+      statsContainer.classList.add(`visually-hidden`);
       const filteredFilms = filterTasks(tasksData, filterComponent._name);
       mainList.innerHTML = ``;
       renderCards(filteredFilms, Film, mainList);
@@ -98,6 +103,15 @@ const renderFilters = (filtersData, tasksData) => {
   });
 };
 
+const showStatistic = () => {
+  statsContainer.innerHTML = ``;
+  const statsComponent = new Statistic(mainData);
+  statsContainer.appendChild(statsComponent.render());
+  filmsContainer.classList.add(`visually-hidden`);
+  statsContainer.classList.remove(`visually-hidden`);
+};
+
+statsLink.addEventListener(`click`, showStatistic);
 
 createCards();
 renderFilters(filters, mainData);
