@@ -9,11 +9,19 @@ export default class Film extends Component {
     this._description = data.description;
     this._rating = data.rating;
     this._date = data.date;
+    this._userDate = data.userDate;
     this._duration = data.duration;
     this._genre = data.genre;
     this._commentsCount = data.commentsCount;
 
+    this._isOnWatchlist = data.isOnWatchlist;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
+
     this._onCommentsClick = this._onCommentsClick.bind(this);
+    this._onWatchlistChange = this._onWatchlistChange.bind(this);
+    this._onWatchedChange = this._onWatchedChange.bind(this);
+    this._onFavoriteChange = this._onFavoriteChange.bind(this);
 
     this._onClick = null;
 
@@ -21,13 +29,80 @@ export default class Film extends Component {
     this._classNames = [`film-card`];
   }
 
-  _onCommentsClick(evt) {
-    evt.preventDefault();
-    return typeof this._onClick === `function` && this._onClick();
+  _processForm() {
+    return {
+      commentsCount: this._commentsCount,
+      isOnWatchlist: this._isOnWatchlist,
+      isWatched: this._isWatched,
+      isFavorite: this._isFavorite,
+    };
   }
 
   _partialUpdate() {
     this._element.querySelector(`.film-card__comments span`).textContent = this._commentsCount;
+  }
+
+  _onCommentsClick(evt) {
+    evt.preventDefault();
+    const newData = {
+      isOnWatchlist: this._isOnWatchlist,
+      isWatched: this._isWatched,
+      isFavorite: this._isFavorite,
+    };
+
+    if (typeof this._onClick === `function`) {
+      this._onClick(newData);
+    }
+
+    this.update(newData);
+  }
+
+  _onWatchlistChange(evt) {
+    evt.preventDefault();
+    this._isOnWatchlist = !this._isOnWatchlist;
+    const newData = this._processForm();
+
+    if (typeof this._onAddToWatchList === `function`) {
+      this._onAddToWatchList(newData);
+    }
+
+    this.update(newData);
+  }
+
+  _onWatchedChange(evt) {
+    evt.preventDefault();
+    this._isWatched = !this._isWatched;
+    const newData = this._processForm();
+
+    if (typeof this._onMarkAsWatched === `function`) {
+      this._onMarkAsWatched(newData);
+    }
+
+    this.update(newData);
+  }
+
+  _onFavoriteChange(evt) {
+    evt.preventDefault();
+    this._isFavorite = !this._isFavorite;
+    const newData = this._processForm();
+
+    if (typeof this._onMarkAsFavorite === `function`) {
+      this._onMarkAsFavorite(newData);
+    }
+
+    this.update(newData);
+  }
+
+  set onAddToWatchList(fn) {
+    this._onAddToWatchList = fn;
+  }
+
+  set onMarkAsWatched(fn) {
+    this._onMarkAsWatched = fn;
+  }
+
+  set onMarkAsFavorite(fn) {
+    this._onMarkAsFavorite = fn;
   }
 
   set onClick(fn) {
@@ -36,6 +111,7 @@ export default class Film extends Component {
 
   get template() {
     return `
+      <article class="film-card">
         <h3 class="film-card__title">${this._title}</h3>
         <p class="film-card__rating">${this._rating}</p>
         <p class="film-card__info">
@@ -49,21 +125,39 @@ export default class Film extends Component {
         <p class="film-card__description">${this._description}</p>
         <button class="film-card__comments"><span>${this._commentsCount}</span> comments</button>
         <form class="film-card__controls">
-          <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist"><!--Add to watchlist--> WL</button>
-          <button class="film-card__controls-item button film-card__controls-item--mark-as-watched"><!--Mark as watched-->WTCHD</button>
-          <button class="film-card__controls-item button film-card__controls-item--favorite"><!--Mark as favorite-->FAV</button>
+          <button
+            class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${this._isOnWatchlist && `film-card__controls-item--active`}">
+              <!--Add to watchlist--> WL</button>
+          <button
+            class="film-card__controls-item button film-card__controls-item--mark-as-watched ${this._isWatched && `film-card__controls-item--active`}">
+              <!--Mark as watched-->WTCHD</button>
+          <button
+            class="film-card__controls-item button film-card__controls-item--favorite ${this._isFavorite && `film-card__controls-item--active`}">
+              <!--Mark as favorite-->FAV</button>
         </form>
-    `;
+      </article>`.trim();
   }
 
   bind() {
     this._element.querySelector(`.film-card__comments`)
         .addEventListener(`click`, this._onCommentsClick);
+    this._element.querySelector(`.film-card__controls-item--add-to-watchlist`)
+        .addEventListener(`click`, this._onWatchlistChange);
+    this._element.querySelector(`.film-card__controls-item--mark-as-watched`)
+        .addEventListener(`click`, this._onWatchedChange);
+    this._element.querySelector(`.film-card__controls-item--favorite`)
+        .addEventListener(`click`, this._onFavoriteChange);
   }
 
   unbind() {
     this._element.querySelector(`.film-card__comments`)
         .removeEventListener(`click`, this._onCommentsClick);
+    this._element.querySelector(`.film-card__controls-item--add-to-watchlist`)
+        .removeEventListener(`click`, this._onWatchlistChange);
+    this._element.querySelector(`.film-card__controls-item--mark-as-watched`)
+        .removeEventListener(`click`, this._onWatchedChange);
+    this._element.querySelector(`.film-card__controls-item--favorite`)
+        .removeEventListener(`click`, this._onFavoriteChange);
     this._onClick = null;
   }
 

@@ -9,6 +9,7 @@ export default class Popup extends Component {
     this._description = data.description;
     this._rating = data.rating;
     this._userRating = data.userRating;
+    this._userDate = data.userDate;
     this._date = data.date;
     this._duration = data.duration;
     this._genre = data.genre;
@@ -150,6 +151,7 @@ export default class Popup extends Component {
 
   get template() {
     return `
+    <section class="film-details">
       <form class="film-details__inner" action="" method="get">
         <div class="film-details__close">
           <button class="film-details__close-btn" type="button">close</button>
@@ -313,7 +315,7 @@ export default class Popup extends Component {
           </div>
         </section>
       </form>
-    `;
+    </section>`.trim();
   }
 
   bind() {

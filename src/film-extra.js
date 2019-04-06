@@ -32,6 +32,7 @@ export default class FilmExtra extends Component {
 
   get template() {
     return `
+    <article class="film-card film-card--no-controls">
       <h3 class="film-card__title">${this._title}</h3>
       <p class="film-card__rating">${this._rating}</p>
       <p class="film-card__info">
@@ -44,7 +45,7 @@ export default class FilmExtra extends Component {
       <img src="./images/posters/${this._picture}.jpg" alt="" class="film-card__poster">
       <p class="film-card__description">${this._description}</p>
       <button class="film-card__comments">${this._commentsCount} comments</button>
-    `;
+    </article>`.trim();
   }
 
   bind() {
