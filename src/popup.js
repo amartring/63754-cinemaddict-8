@@ -27,7 +27,8 @@ export default class Popup extends Component {
     this._isWatched = false;
     this._isFavorite = false;
 
-    this._onPopupClose = this._onPopupClose.bind(this);
+    this._onCloseClick = this._onCloseClick.bind(this);
+    this._onEscPress = this._onEscPress.bind(this);
     this._onEmojiChange = this._onEmojiChange.bind(this);
     this._onCommentAdd = this._onCommentAdd.bind(this);
     this._onRatingChange = this._onRatingChange.bind(this);
@@ -61,18 +62,6 @@ export default class Popup extends Component {
 
   _partialUpdate() {
     this._element.innerHTML = this.template;
-  }
-
-  _onPopupClose(evt) {
-    evt.preventDefault();
-    const formData = new FormData(this._element.querySelector(`.film-details__inner`));
-    const newData = this._processForm(formData);
-
-    if (typeof this._onClose === `function`) {
-      this._onClose(newData);
-    }
-
-    this.update(newData);
   }
 
   _getEmoji(emo) {
@@ -136,6 +125,28 @@ export default class Popup extends Component {
     this.bind();
   }
 
+  _onCloseClick(evt) {
+    evt.preventDefault();
+    const formData = new FormData(this._element.querySelector(`.film-details__inner`));
+    const newData = this._processForm(formData);
+    if (typeof this._onClose === `function`) {
+      this._onClose(newData);
+    }
+    this.update(newData);
+  }
+
+  _onEscPress(evt) {
+    if (evt.keyCode === 27) {
+      evt.preventDefault();
+      const formData = new FormData(this._element.querySelector(`.film-details__inner`));
+      const newData = this._processForm(formData);
+      if (typeof this._onClose === `function`) {
+        this._onClose(newData);
+      }
+      this.update(newData);
+    }
+  }
+
   set onClose(fn) {
     this._onClose = fn;
   }
@@ -148,7 +159,7 @@ export default class Popup extends Component {
           <p class="film-details__comment-text">${comment.comment}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${comment.author}</span>
-            <span class="film-details__comment-day">${moment(comment.date).format(`DD MMMM YYYY HH:mm`)}</span>
+            <span class="film-details__comment-day">${moment(comment.date).fromNow()}</span>
           </p>
         </div>
       </li>`)
@@ -330,7 +341,8 @@ export default class Popup extends Component {
 
   bind() {
     this._element.querySelector(`.film-details__close-btn`)
-        .addEventListener(`click`, this._onPopupClose);
+        .addEventListener(`click`, this._onCloseClick);
+    document.addEventListener(`keydown`, this._onEscPress);
     this._element.querySelector(`.film-details__emoji-list`)
         .addEventListener(`click`, this._onEmojiChange);
     this._element.querySelector(`.film-details__new-comment`)
@@ -348,7 +360,8 @@ export default class Popup extends Component {
 
   unbind() {
     this._element.querySelector(`.film-details__close-btn`)
-        .removeEventListener(`click`, this._onCommentAdd);
+        .removeEventListener(`click`, this._onCloseClick);
+    document.removeEventListener(`keydown`, this._onEscPress);
     this._element.querySelector(`.film-details__emoji-list`)
         .removeEventListener(`click`, this._onEmojiChange);
     this._element.querySelector(`.film-details__new-comment`)
