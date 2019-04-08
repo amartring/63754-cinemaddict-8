@@ -22,6 +22,7 @@ const filmsLoader = filmsContainer.querySelector(`.films-list__show-more`);
 const statsLink = body.querySelector(`.main-navigation__item--additional`);
 const statsContainer = body.querySelector(`.statistic`);
 const loadingContainer = document.querySelector(`.films-list__title`);
+const footerStats = document.querySelector(`.footer__statistics p`);
 
 const mainList = filmLists[0];
 const ratedList = filmLists[1];
@@ -32,8 +33,8 @@ const commentedList = filmLists[2];
 // const mainData = getData(FILMS_COUNT, film);
 
 const setupFilmsLoader = function () {
-  const invisibleTasks = mainList.querySelectorAll(`.film-card.${HIDDEN_CLASS}`);
-  return invisibleTasks.length === 0
+  const invisibleFilms = mainList.querySelectorAll(`.film-card.${HIDDEN_CLASS}`);
+  return invisibleFilms.length === 0
     ? filmsLoader.classList.add(HIDDEN_CLASS)
     : filmsLoader.classList.remove(HIDDEN_CLASS);
 };
@@ -46,9 +47,9 @@ const hideExtraFilms = () => {
 };
 
 const onLoaderClick = () => {
-  const invisibleTasks = mainList.querySelectorAll(`.film-card.${HIDDEN_CLASS}`);
-  for (let i = 0; i < invisibleTasks.length && i < VISIBLE_FILMS_NUMBER; i++) {
-    invisibleTasks[i].classList.remove(HIDDEN_CLASS);
+  const invisibleFilms = mainList.querySelectorAll(`.film-card.${HIDDEN_CLASS}`);
+  for (let i = 0; i < invisibleFilms.length && i < VISIBLE_FILMS_NUMBER; i++) {
+    invisibleFilms[i].classList.remove(HIDDEN_CLASS);
   }
   setupFilmsLoader();
 };
@@ -117,13 +118,25 @@ const renderFilters = (filtersData, tasksData) => {
     filterComponent.onFilter = () => {
       filmsContainer.classList.remove(HIDDEN_CLASS);
       statsContainer.classList.add(HIDDEN_CLASS);
+      loadingContainer.classList.add(HIDDEN_CLASS);
       const filteredFilms = filterFilms(tasksData, filterComponent._name);
       mainList.innerHTML = ``;
+      if (filteredFilms.length === 0) {
+        loadingContainer.textContent = `Maybe at firs you'll add some films to this list?`;
+        loadingContainer.classList.remove(HIDDEN_CLASS);
+      }
       renderFilms(filteredFilms, Film, mainList);
+      hideExtraFilms();
+      setupFilmsLoader();
     };
 
     filtersContainer.insertAdjacentElement(`afterbegin`, filterComponent.render());
   });
+};
+
+const setupFooterStats = () => {
+  const filmsCount = mainList.querySelectorAll(`.film-card`).length;
+  footerStats.textContent = `${filmsCount} movie${filmsCount === 1 ? `` : `s`} inside`;
 };
 
 const renderStatistic = (data) => {
@@ -158,6 +171,7 @@ api.getFilms()
     renderFilms(getCommentedFilms(films), FilmExtra, commentedList);
     renderFilters(filters, films);
     renderStatistic(films);
+    setupFooterStats();
   })
   .catch(() => {
     showLoadingMessage(Message.ERROR);
