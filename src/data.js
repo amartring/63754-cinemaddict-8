@@ -1,4 +1,5 @@
 import {shuffleArray, getRandomNumber} from './util';
+import {FilterName} from './constants.js';
 
 const getDescription = () => {
   const description = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -137,22 +138,22 @@ const film = () => ({
 
 const filters = [
   {
-    name: `All movies`,
+    name: FilterName.all,
     count: ``,
     isActive: true,
   },
   {
-    name: `Watchlist`,
+    name: FilterName.watchlist,
     count: 13,
     isActive: false,
   },
   {
-    name: `History`,
+    name: FilterName.history,
     count: 4,
     isActive: false,
   },
   {
-    name: `Favorites`,
+    name: FilterName.favorites,
     count: 8,
     isActive: false,
   }

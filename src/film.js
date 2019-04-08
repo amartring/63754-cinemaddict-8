@@ -4,15 +4,15 @@ import moment from 'moment';
 export default class Film extends Component {
   constructor(data) {
     super();
+    this._id = data.id;
+    this._comments = data.comments;
     this._title = data.title;
-    this._picture = data.picture;
+    this._poster = data.poster;
     this._description = data.description;
-    this._rating = data.rating;
+    this._totalRating = data.totalRating;
     this._date = data.date;
-    this._userDate = data.userDate;
     this._duration = data.duration;
     this._genre = data.genre;
-    this._commentsCount = data.commentsCount;
 
     this._isOnWatchlist = data.isOnWatchlist;
     this._isWatched = data.isWatched;
@@ -24,14 +24,11 @@ export default class Film extends Component {
     this._onFavoriteChange = this._onFavoriteChange.bind(this);
 
     this._onClick = null;
-
-    this._htmlElement = `article`;
-    this._classNames = [`film-card`];
   }
 
   _processForm() {
     return {
-      commentsCount: this._commentsCount,
+      comments: this._comments,
       isOnWatchlist: this._isOnWatchlist,
       isWatched: this._isWatched,
       isFavorite: this._isFavorite,
@@ -39,16 +36,12 @@ export default class Film extends Component {
   }
 
   _partialUpdate() {
-    this._element.querySelector(`.film-card__comments span`).textContent = this._commentsCount;
+    this._element.querySelector(`.film-card__comments span`).textContent = this._comments.length;
   }
 
   _onCommentsClick(evt) {
     evt.preventDefault();
-    const newData = {
-      isOnWatchlist: this._isOnWatchlist,
-      isWatched: this._isWatched,
-      isFavorite: this._isFavorite,
-    };
+    const newData = this._processForm();
 
     if (typeof this._onClick === `function`) {
       this._onClick(newData);
@@ -113,17 +106,17 @@ export default class Film extends Component {
     return `
       <article class="film-card">
         <h3 class="film-card__title">${this._title}</h3>
-        <p class="film-card__rating">${this._rating}</p>
+        <p class="film-card__rating">${this._totalRating}</p>
         <p class="film-card__info">
           <span class="film-card__year">${moment(this._date).format(`YYYY`)}</span>
           <span class="film-card__duration">
-            ${moment.duration(this._duration).hours()}:${moment.duration(this._duration).minutes()}
+            ${moment.duration(this._duration * 1000 * 60).hours()}:${moment.duration(this._duration * 1000 * 60).minutes()}
           </span>
-          <span class="film-card__genre">${this._genre}</span>
+          <span class="film-card__genre">${this._genre.join(` `)}</span>
         </p>
-        <img src="./images/posters/${this._picture}.jpg" alt="" class="film-card__poster">
+        <img src="./${this._poster}" alt="" class="film-card__poster">
         <p class="film-card__description">${this._description}</p>
-        <button class="film-card__comments"><span>${this._commentsCount}</span> comments</button>
+        <button class="film-card__comments"><span>${this._comments.length}</span> comments</button>
         <form class="film-card__controls">
           <button
             class="film-card__controls-item button film-card__controls-item--add-to-watchlist ${this._isOnWatchlist && `film-card__controls-item--active`}">
@@ -162,7 +155,7 @@ export default class Film extends Component {
   }
 
   update(data) {
-    this._commentsCount = data.commentsCount;
+    this._comments = data.comments;
     this._userRating = data.userRating;
     this._isOnWatchlist = data.isOnWatchlist;
     this._isWatched = data.isWatched;

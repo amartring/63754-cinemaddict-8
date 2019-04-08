@@ -19,14 +19,15 @@ const objectToSortedArray = (object) => {
 };
 
 const rank = {
-  comedy: `Harley Quinn`,
-  biopic: `Librarian`,
-  thriller: `Thrill-seeker`,
-  drama: `William Shakespeare`,
-  fantasy: `Illusionist`,
-  detective: `Hercule Poirot`,
-  cartoon: `Bugs Bunny`,
-  crime: `Malefactor`,
+  'Comedy': `Harley Quinn`,
+  'Thriller': `Thrill-seeker`,
+  'Drama': `William Shakespeare`,
+  'Animation': `Bugs Bunny`,
+  'Adventure': `Dr. Henry Jones`,
+  'Action': `Bruce Willis`,
+  'Sci-Fi': `Doctor Who`,
+  'Family': `Mary Poppins`,
+  'Horror': `Freddy Krueger`,
 };
 
 export {getRandomNumber, shuffleArray, objectToSortedArray, rank};

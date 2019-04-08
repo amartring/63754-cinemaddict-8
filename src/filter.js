@@ -1,4 +1,5 @@
 import Component from './component.js';
+import {filterFilms} from './filter-films.js';
 
 export default class Filter extends Component {
   constructor(data) {
@@ -15,6 +16,10 @@ export default class Filter extends Component {
 
   _partialUpdate() {
     this._element.innerHTML = this.template;
+  }
+
+  _getFilerData() {
+    return filterFilms();
   }
 
   _onFilterClick(evt) {
