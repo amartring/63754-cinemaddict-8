@@ -36,6 +36,10 @@ export default class Film extends Component {
   }
 
   _partialUpdate() {
+    this.unbind();
+    const oldElement = this._element;
+    this._element = this.render();
+    oldElement.parentNode.replaceChild(this._element, oldElement);
     this._element.querySelector(`.film-card__comments span`).textContent = this._comments.length;
   }
 
@@ -60,6 +64,7 @@ export default class Film extends Component {
     }
 
     this.update(newData);
+    this._partialUpdate();
   }
 
   _onWatchedChange(evt) {
@@ -72,6 +77,7 @@ export default class Film extends Component {
     }
 
     this.update(newData);
+    this._partialUpdate();
   }
 
   _onFavoriteChange(evt) {
@@ -84,6 +90,7 @@ export default class Film extends Component {
     }
 
     this.update(newData);
+    this._partialUpdate();
   }
 
   set onAddToWatchList(fn) {

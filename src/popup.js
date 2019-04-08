@@ -61,7 +61,10 @@ export default class Popup extends Component {
   }
 
   _partialUpdate() {
-    this._element.innerHTML = this.template;
+    this.unbind();
+    const oldElement = this._element;
+    this._element = this.render();
+    oldElement.parentNode.replaceChild(this._element, oldElement);
   }
 
   _getEmoji(emo) {
@@ -81,7 +84,7 @@ export default class Popup extends Component {
   _onCommentAdd(evt) {
     const commentsList = this._element.querySelector(`.film-details__comments-list`);
     const commentField = this._element.querySelector(`.film-details__comment-input`);
-    if (evt.ctrlKey && evt.keyCode === 13 && commentField.value) {
+    if ((evt.ctrlKey || evt.metaKey) && evt.keyCode === 13 && commentField.value) {
       const newComment = {};
       newComment.comment = commentField.value;
       newComment.author = `Super Duper Alice Cooper`;
@@ -93,9 +96,7 @@ export default class Popup extends Component {
       commentField.value = ``;
 
       commentsList.innerHTML = this._getCommentsTemplate();
-      this.unbind();
       this._partialUpdate();
-      this.bind();
     }
   }
 
@@ -106,23 +107,17 @@ export default class Popup extends Component {
 
   _onWatchlistChange() {
     this._isOnWatchlist = !this._isOnWatchlist;
-    this.unbind();
     this._partialUpdate();
-    this.bind();
   }
 
   _onWatchedChange() {
     this._isWatched = !this._isWatched;
-    this.unbind();
     this._partialUpdate();
-    this.bind();
   }
 
   _onFavoriteChange() {
     this._isFavorite = !this._isFavorite;
-    this.unbind();
     this._partialUpdate();
-    this.bind();
   }
 
   _onCloseClick(evt) {
@@ -277,9 +272,8 @@ export default class Popup extends Component {
         <section class="film-details__user-rating-wrap">
           <div class="film-details__user-rating-controls">
             <span
-              class="film-details__watched-status
-              ${this._isWatched && ` film-details__watched-status--active`}">
-                Already watched
+              class="film-details__watched-status">
+                ${this._isWatched ? `Already watched` : `Will watch`}
             </span>
             <button class="film-details__watched-reset" type="button">undo</button>
           </div>

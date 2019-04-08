@@ -8,7 +8,6 @@ import {filters} from './data.js';
 import {HIDDEN_CLASS, VISIBLE_FILMS_NUMBER, Message} from './constants.js';
 import {filterFilms} from './filter-films.js';
 
-// const FILMS_COUNT = 20;
 const AUTHORIZATION = `Basic dXNlckBwYXNzd35yZAo=${Math.random()}`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
 
@@ -27,10 +26,6 @@ const footerStats = document.querySelector(`.footer__statistics p`);
 const mainList = filmLists[0];
 const ratedList = filmLists[1];
 const commentedList = filmLists[2];
-
-// const getData = (count, data) => new Array(count).fill(``).map(() => data());
-
-// const mainData = getData(FILMS_COUNT, film);
 
 const setupFilmsLoader = function () {
   const invisibleFilms = mainList.querySelectorAll(`.film-card.${HIDDEN_CLASS}`);
@@ -96,30 +91,42 @@ const renderFilms = (data, FilmConstructor, container) => {
 
     filmComponent.onAddToWatchList = (newObj) => {
       filmComponent.update((Object.assign(item, newObj)));
+      updateFilterCount(`#watchlist`, filmComponent._isOnWatchlist);
     };
 
     filmComponent.onMarkAsWatched = (newObj) => {
       filmComponent.update((Object.assign(item, newObj)));
+      updateFilterCount(`#history`, filmComponent._isWatched);
     };
 
     filmComponent.onMarkAsFavorite = (newObj) => {
       filmComponent.update((Object.assign(item, newObj)));
+      updateFilterCount(`#favorites`, filmComponent._isFavorite);
     };
-
 
     container.appendChild(filmComponent.render());
   });
 };
 
-const renderFilters = (filtersData, tasksData) => {
+const updateFilterCount = (id, state) => {
+  let count = +(document.querySelector(id).textContent);
+  state ? count++ : count--;
+  document.querySelector(id).textContent = count;
+  count ? document.querySelector(id).classList.remove(HIDDEN_CLASS) : document.querySelector(id).classList.add(HIDDEN_CLASS);
+};
+
+const renderFilters = (filtersData, filmsData) => {
   filtersData.reverse().forEach((item) => {
     const filterComponent = new Filter(item);
+    let filteredFilms = filterFilms(filmsData, filterComponent._name);
+    filterComponent.getCount(filteredFilms.length);
 
     filterComponent.onFilter = () => {
       filmsContainer.classList.remove(HIDDEN_CLASS);
       statsContainer.classList.add(HIDDEN_CLASS);
       loadingContainer.classList.add(HIDDEN_CLASS);
-      const filteredFilms = filterFilms(tasksData, filterComponent._name);
+      filteredFilms = filterFilms(filmsData, filterComponent._name);
+      filterComponent.update(filteredFilms.length);
       mainList.innerHTML = ``;
       if (filteredFilms.length === 0) {
         loadingContainer.textContent = `Maybe at firs you'll add some films to this list?`;
@@ -180,4 +187,4 @@ api.getFilms()
 statsLink.addEventListener(`click`, onStatsClick);
 filmsLoader.addEventListener(`click`, onLoaderClick);
 
-console.log(api.getFilms());
+// console.log(api.getFilms());

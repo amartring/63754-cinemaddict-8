@@ -139,22 +139,18 @@ const film = () => ({
 const filters = [
   {
     name: FilterName.all,
-    count: ``,
     isActive: true,
   },
   {
     name: FilterName.watchlist,
-    count: 13,
     isActive: false,
   },
   {
     name: FilterName.history,
-    count: 4,
     isActive: false,
   },
   {
     name: FilterName.favorites,
-    count: 8,
     isActive: false,
   }
 ];
