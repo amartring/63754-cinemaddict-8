@@ -5,10 +5,10 @@ import Filter from './filter.js';
 import Statistic from './statistic.js';
 import API from './api.js';
 import {filters} from './data.js';
-import {HIDDEN_CLASS, Message} from './constants.js';
+import {HIDDEN_CLASS, VISIBLE_FILMS_NUMBER, Message} from './constants.js';
 import {filterFilms} from './filter-films.js';
 
-const FILMS_COUNT = 20;
+// const FILMS_COUNT = 20;
 const AUTHORIZATION = `Basic dXNlckBwYXNzd35yZAo=${Math.random()}`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
 
@@ -18,6 +18,7 @@ const body = document.querySelector(`body`);
 const filtersContainer = body.querySelector(`.main-navigation`);
 const filmsContainer = body.querySelector(`.films`);
 const filmLists = filmsContainer.querySelectorAll(`.films-list__container`);
+const filmsLoader = filmsContainer.querySelector(`.films-list__show-more`);
 const statsLink = body.querySelector(`.main-navigation__item--additional`);
 const statsContainer = body.querySelector(`.statistic`);
 const loadingContainer = document.querySelector(`.films-list__title`);
@@ -30,6 +31,29 @@ const commentedList = filmLists[2];
 
 // const mainData = getData(FILMS_COUNT, film);
 
+const setupFilmsLoader = function () {
+  const invisibleTasks = mainList.querySelectorAll(`.film-card.${HIDDEN_CLASS}`);
+  return invisibleTasks.length === 0
+    ? filmsLoader.classList.add(HIDDEN_CLASS)
+    : filmsLoader.classList.remove(HIDDEN_CLASS);
+};
+
+const hideExtraFilms = () => {
+  const films = mainList.querySelectorAll(`.film-card`);
+  films.forEach((task, index) => {
+    return index >= VISIBLE_FILMS_NUMBER && task.classList.add(HIDDEN_CLASS);
+  });
+};
+
+const onLoaderClick = () => {
+  const invisibleTasks = mainList.querySelectorAll(`.film-card.${HIDDEN_CLASS}`);
+  for (let i = 0; i < invisibleTasks.length && i < VISIBLE_FILMS_NUMBER; i++) {
+    invisibleTasks[i].classList.remove(HIDDEN_CLASS);
+  }
+  setupFilmsLoader();
+};
+
+
 const getRatedFilms = (data) => {
   return data.slice()
     .sort((left, right) => Number(right.totalRating) - Number(left.totalRating)).slice(0, 2);
@@ -40,7 +64,7 @@ const getCommentedFilms = (data) => {
     .sort((left, right) => right.comments.length - left.comments.length).slice(0, 2);
 };
 
-const renderCards = (data, FilmConstructor, container) => {
+const renderFilms = (data, FilmConstructor, container) => {
   data.forEach((item) => {
     const filmComponent = new FilmConstructor(item);
 
@@ -95,7 +119,7 @@ const renderFilters = (filtersData, tasksData) => {
       statsContainer.classList.add(HIDDEN_CLASS);
       const filteredFilms = filterFilms(tasksData, filterComponent._name);
       mainList.innerHTML = ``;
-      renderCards(filteredFilms, Film, mainList);
+      renderFilms(filteredFilms, Film, mainList);
     };
 
     filtersContainer.insertAdjacentElement(`afterbegin`, filterComponent.render());
@@ -127,9 +151,11 @@ showLoadingMessage(Message.LOADING);
 api.getFilms()
   .then((films) => {
     hideLoadingMessage();
-    renderCards(films, Film, mainList);
-    renderCards(getRatedFilms(films), FilmExtra, ratedList);
-    renderCards(getCommentedFilms(films), FilmExtra, commentedList);
+    renderFilms(films, Film, mainList);
+    hideExtraFilms();
+    setupFilmsLoader();
+    renderFilms(getRatedFilms(films), FilmExtra, ratedList);
+    renderFilms(getCommentedFilms(films), FilmExtra, commentedList);
     renderFilters(filters, films);
     renderStatistic(films);
   })
@@ -138,5 +164,6 @@ api.getFilms()
   });
 
 statsLink.addEventListener(`click`, onStatsClick);
+filmsLoader.addEventListener(`click`, onLoaderClick);
 
 console.log(api.getFilms());

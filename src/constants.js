@@ -11,3 +11,5 @@ export const FilterName = {
 };
 
 export const HIDDEN_CLASS = `visually-hidden`;
+
+export const VISIBLE_FILMS_NUMBER = 5;
