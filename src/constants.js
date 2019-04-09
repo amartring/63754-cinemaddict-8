@@ -10,6 +10,23 @@ export const FilterName = {
   favorites: `Favorites`,
 };
 
+export const Rating = {
+  low: {
+    minCount: 1,
+    maxCount: 10,
+    name: `novice`,
+  },
+  medium: {
+    minCount: 11,
+    maxCount: 20,
+    name: `fan`,
+  },
+  high: {
+    minCount: 21,
+    name: `movie buff`,
+  },
+};
+
 export const HIDDEN_CLASS = `visually-hidden`;
 
 export const VISIBLE_FILMS_NUMBER = 5;

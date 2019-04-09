@@ -5,7 +5,7 @@ import Filter from './filter.js';
 import Statistic from './statistic.js';
 import API from './api.js';
 import {filters} from './data.js';
-import {HIDDEN_CLASS, VISIBLE_FILMS_NUMBER, Message} from './constants.js';
+import {HIDDEN_CLASS, VISIBLE_FILMS_NUMBER, Message, Rating} from './constants.js';
 import {filterFilms} from './filter-films.js';
 
 const AUTHORIZATION = `Basic dXNlckBwYXNzd35yZAo=${Math.random()}`;
@@ -22,6 +22,7 @@ const statsLink = body.querySelector(`.main-navigation__item--additional`);
 const statsContainer = body.querySelector(`.statistic`);
 const loadingContainer = document.querySelector(`.films-list__title`);
 const footerStats = document.querySelector(`.footer__statistics p`);
+const headerRating = document.querySelector(`.profile__rating`);
 
 const mainList = filmLists[0];
 const ratedList = filmLists[1];
@@ -97,6 +98,7 @@ const renderFilms = (data, FilmConstructor, container) => {
     filmComponent.onMarkAsWatched = (newObj) => {
       filmComponent.update((Object.assign(item, newObj)));
       updateFilterCount(`#history`, filmComponent._isWatched);
+      updateRating();
     };
 
     filmComponent.onMarkAsFavorite = (newObj) => {
@@ -113,6 +115,17 @@ const updateFilterCount = (id, state) => {
   state ? count++ : count--;
   document.querySelector(id).textContent = count;
   count ? document.querySelector(id).classList.remove(HIDDEN_CLASS) : document.querySelector(id).classList.add(HIDDEN_CLASS);
+};
+
+const updateRating = () => {
+  const count = +(document.querySelector(`#history`).textContent);
+  if (count >= Rating.low.minCount && count <= Rating.low.maxCount) {
+    headerRating.textContent = Rating.low.name;
+  } else if (count >= Rating.medium.minCount && count <= Rating.medium.maxCount) {
+    headerRating.textContent = Rating.medium.name;
+  } else if (count >= Rating.high.minCount) {
+    headerRating.textContent = Rating.high.name;
+  }
 };
 
 const renderFilters = (filtersData, filmsData) => {
@@ -179,6 +192,7 @@ api.getFilms()
     renderFilters(filters, films);
     renderStatistic(films);
     setupFooterStats();
+    updateRating();
   })
   .catch(() => {
     showLoadingMessage(Message.ERROR);
