@@ -1,9 +1,9 @@
 import Chart from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import Component from './component.js';
 import moment from 'moment';
 import {createElement} from './create-element.js';
 import {objectToSortedArray, rank} from './util.js';
+import {getChart} from './get-chart.js';
 
 export default class Statistic extends Component {
   constructor(data) {
@@ -16,34 +16,41 @@ export default class Statistic extends Component {
     this._onFilter = null;
   }
 
-  // eslint-disable-next-line consistent-return
   _filterByTime(filterValue) {
+    let filteredFilms = this._watchedFilms;
     switch (filterValue) {
       case `all-time`:
-        return this._watchedFilms;
+        filteredFilms = this._watchedFilms;
+        break;
 
       case `today`:
-        return this._watchedFilms.filter((it) =>
+        filteredFilms = this._watchedFilms.filter((it) =>
           moment(it.userDate).format(`D MMMM YYYY`) === moment().format(`D MMMM YYYY`));
+        break;
 
       case `week`:
-        return this._watchedFilms.filter((it) =>
+        filteredFilms = this._watchedFilms.filter((it) =>
           moment(it.userDate).isAfter(moment().subtract(7, `days`)));
+        break;
 
       case `month`:
-        return this._watchedFilms.filter((it) =>
+        filteredFilms = this._watchedFilms.filter((it) =>
           moment(it.userDate).isAfter(moment().subtract(1, `months`)));
+        break;
 
       case `year`:
-        return this._watchedFilms.filter((it) =>
+        filteredFilms = this._watchedFilms.filter((it) =>
           moment(it.userDate).isAfter(moment().subtract(1, `year`)));
+        break;
     }
+    return filteredFilms;
   }
 
   _filterByGenre(films) {
     const data = {};
 
-    const allGenres = films.map((it) => it.genre);
+    const allGenres = [];
+    films.map((it) => it.genre.forEach((genre) => allGenres.push(genre)));
     const uniqueGenres = new Set(allGenres);
     uniqueGenres.forEach((it) => {
       data[it] = allGenres.filter((genre) => genre === it).length;
@@ -56,14 +63,14 @@ export default class Statistic extends Component {
     return [genres, genresCounts];
   }
 
-  _getChartData(films) {
+  _createChart(films) {
     const [genresLabels, genresCounts] = this._filterByGenre(films);
 
     const statsWrapper = this._element.querySelector(`.statistic__chart`);
     const BAR_HEIGHT = 50;
     statsWrapper.height = BAR_HEIGHT * genresLabels.length;
 
-    this._genreChart = new Chart(statsWrapper, this._getChart());
+    this._genreChart = new Chart(statsWrapper, getChart());
 
     this._genreChart.data = {
       labels: genresLabels,
@@ -78,56 +85,6 @@ export default class Statistic extends Component {
     this._genreChart.update();
   }
 
-  _getChart() {
-    return {
-      plugins: [ChartDataLabels],
-      type: `horizontalBar`,
-      options: {
-        plugins: {
-          datalabels: {
-            font: {
-              size: 20
-            },
-            color: `#ffffff`,
-            anchor: `start`,
-            align: `start`,
-            offset: 40,
-          }
-        },
-        scales: {
-          yAxes: [{
-            ticks: {
-              fontColor: `#ffffff`,
-              padding: 100,
-              fontSize: 20
-            },
-            gridLines: {
-              display: false,
-              drawBorder: false
-            },
-            barThickness: 24
-          }],
-          xAxes: [{
-            ticks: {
-              display: false,
-              beginAtZero: true
-            },
-            gridLines: {
-              display: false,
-              drawBorder: false
-            },
-          }],
-        },
-        legend: {
-          display: false
-        },
-        tooltips: {
-          enabled: false
-        }
-      }
-    };
-  }
-
   _getTopGenre(films) {
     const [genresLabels, genresCounts] = this._filterByGenre(films);
     const maxCount = Math.max(...genresCounts);
@@ -137,23 +94,23 @@ export default class Statistic extends Component {
 
   _getRank(films) {
     const genre = this._getTopGenre(films);
-    return rank[genre];
+    return `${genre ? rank[genre] : `cmon, see a couple of movies`}`;
   }
 
   _getDurationTemplate(films) {
     const allDurations = films.map((it) => it.duration);
-    const totalDuration = allDurations.reduce((it, next) => it + next);
+    const totalDuration = allDurations === 0 ? 0 : allDurations.reduce((it, next) => it + next);
     return `
-      ${moment.duration(totalDuration).hours()}
+      ${moment.duration(totalDuration * 1000 * 60).hours()}
       <span class="statistic__item-description">h</span>
-      ${moment.duration(totalDuration).minutes()}
+      ${moment.duration(totalDuration * 1000 * 60).minutes()}
       <span class="statistic__item-description">m</span>
     `;
   }
 
   _getTopGenreTemplate(films) {
     const genre = this._getTopGenre(films);
-    return `${genre ? genre : `-`}`;
+    return `${genre ? genre : `no genre - strange movie`}`;
   }
 
   _getWatchedTemplate(films) {
@@ -181,7 +138,7 @@ export default class Statistic extends Component {
     this._element.querySelector(`.statistic__rank-label`).innerHTML = this._getRank(filteredDatas);
 
     this._genreChart.destroy();
-    this._getChartData(filteredDatas);
+    this._createChart(filteredDatas);
   }
 
   set onFilter(fn) {
@@ -252,9 +209,8 @@ export default class Statistic extends Component {
 
   render() {
     this._element = createElement(this.template);
-    this._getChartData(this._watchedFilms);
+    this._createChart(this._watchedFilms);
     this.bind();
     return this._element;
   }
 }
-
