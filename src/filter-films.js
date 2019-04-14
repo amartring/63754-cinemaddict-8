@@ -21,3 +21,7 @@ export const filterFilms = (data, filterName) => {
   }
   return filteredFilms;
 };
+
+export const searchFilms = (data, request) => {
+  return data.filter((it) => it.title.toLowerCase().includes(request.toLowerCase()));
+};

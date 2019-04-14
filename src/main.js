@@ -6,7 +6,7 @@ import Statistic from './statistic.js';
 import API from './api.js';
 import {filters} from './data.js';
 import {HIDDEN_CLASS, VISIBLE_FILMS_NUMBER, Message, Rating} from './constants.js';
-import {filterFilms} from './filter-films.js';
+import {filterFilms, searchFilms} from './filter-films.js';
 
 const AUTHORIZATION = `Basic dXNlckBwYXNzd35yZAo=${Math.random()}`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
@@ -20,9 +20,10 @@ const filmLists = filmsContainer.querySelectorAll(`.films-list__container`);
 const filmsLoader = filmsContainer.querySelector(`.films-list__show-more`);
 const statsLink = body.querySelector(`.main-navigation__item--additional`);
 const statsContainer = body.querySelector(`.statistic`);
-const loadingContainer = document.querySelector(`.films-list__title`);
+const messageContainer = document.querySelector(`.films-list__title`);
 const footerStats = document.querySelector(`.footer__statistics p`);
 const headerRating = document.querySelector(`.profile__rating`);
+const searchFild = document.querySelector(`.search__field`);
 
 const mainList = filmLists[0];
 const ratedList = filmLists[1];
@@ -137,13 +138,13 @@ const renderFilters = (filtersData, filmsData) => {
     filterComponent.onFilter = () => {
       filmsContainer.classList.remove(HIDDEN_CLASS);
       statsContainer.classList.add(HIDDEN_CLASS);
-      loadingContainer.classList.add(HIDDEN_CLASS);
+      messageContainer.classList.add(HIDDEN_CLASS);
       filteredFilms = filterFilms(filmsData, filterComponent._name);
       filterComponent.update(filteredFilms.length);
       mainList.innerHTML = ``;
       if (filteredFilms.length === 0) {
-        loadingContainer.textContent = `Maybe at firs you'll add some films to this list?`;
-        loadingContainer.classList.remove(HIDDEN_CLASS);
+        messageContainer.textContent = Message.FILTER;
+        messageContainer.classList.remove(HIDDEN_CLASS);
       }
       renderFilms(filteredFilms, Film, mainList);
       hideExtraFilms();
@@ -159,6 +160,23 @@ const setupFooterStats = () => {
   footerStats.textContent = `${filmsCount} movie${filmsCount === 1 ? `` : `s`} inside`;
 };
 
+const onSearchInput = (evt) => {
+  const target = evt.target;
+  mainList.innerHTML = ``;
+  api.getFilms()
+    .then((films) => {
+      const filteredFilms = searchFilms(films, target.value);
+      messageContainer.classList.add(HIDDEN_CLASS);
+      renderFilms(filteredFilms, Film, mainList);
+      hideExtraFilms();
+      setupFilmsLoader();
+      if (filteredFilms.length === 0) {
+        messageContainer.classList.remove(HIDDEN_CLASS);
+        messageContainer.textContent = Message.SEARCH;
+      }
+    });
+};
+
 const renderStatistic = (data) => {
   statsContainer.innerHTML = ``;
   const statsComponent = new Statistic(data);
@@ -171,12 +189,12 @@ const onStatsClick = () => {
 };
 
 const showLoadingMessage = (text) => {
-  loadingContainer.classList.remove(HIDDEN_CLASS);
-  loadingContainer.textContent = text;
+  messageContainer.classList.remove(HIDDEN_CLASS);
+  messageContainer.textContent = text;
 };
 
 const hideLoadingMessage = () => {
-  loadingContainer.classList.add(HIDDEN_CLASS);
+  messageContainer.classList.add(HIDDEN_CLASS);
 };
 
 showLoadingMessage(Message.LOADING);
@@ -200,5 +218,6 @@ api.getFilms()
 
 statsLink.addEventListener(`click`, onStatsClick);
 filmsLoader.addEventListener(`click`, onLoaderClick);
+searchFild.addEventListener(`input`, onSearchInput);
 
 // console.log(api.getFilms());
