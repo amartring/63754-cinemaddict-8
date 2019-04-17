@@ -1,5 +1,4 @@
 import Component from './component.js';
-// import {filterFilms} from './filter-films.js';
 
 export default class Filter extends Component {
   constructor(data) {

@@ -3,6 +3,7 @@ import FilmExtra from './film-extra.js';
 import Popup from './popup.js';
 import Filter from './filter.js';
 import Statistic from './statistic.js';
+import Search from './search.js';
 import API from './api.js';
 import {filters} from './data.js';
 import {HIDDEN_CLASS, VISIBLE_FILMS_NUMBER, Message, Rating} from './constants.js';
@@ -21,6 +22,7 @@ const filmsLoader = filmsContainer.querySelector(`.films-list__show-more`);
 const statsLink = body.querySelector(`.main-navigation__item--additional`);
 const statsContainer = body.querySelector(`.statistic`);
 const messageContainer = document.querySelector(`.films-list__title`);
+const searchContainer = document.querySelector(`.header__search`);
 const footerStats = document.querySelector(`.footer__statistics p`);
 const headerRating = document.querySelector(`.profile__rating`);
 const searchFild = document.querySelector(`.search__field`);
@@ -155,27 +157,68 @@ const renderFilters = (filtersData, filmsData) => {
   });
 };
 
+const renderSearch = () => {
+  const searchComponent = new Search();
+
+  searchComponent.onSearch = (evt) => {
+    const target = evt.target;
+    mainList.innerHTML = ``;
+    api.getFilms()
+      .then((films) => {
+        const filteredFilms = searchFilms(films, target.value);
+        messageContainer.classList.add(HIDDEN_CLASS);
+        renderFilms(filteredFilms, Film, mainList);
+        hideExtraFilms();
+        setupFilmsLoader();
+        if (filteredFilms.length === 0) {
+          messageContainer.classList.remove(HIDDEN_CLASS);
+          messageContainer.textContent = Message.SEARCH;
+        }
+      });
+  };
+  // let filteredFilms = filterFilms(filmsData, filterComponent._name);
+  // filterComponent.getCount(filteredFilms.length);
+
+  // filterComponent.onFilter = () => {
+  //   filmsContainer.classList.remove(HIDDEN_CLASS);
+  //   statsContainer.classList.add(HIDDEN_CLASS);
+  //   messageContainer.classList.add(HIDDEN_CLASS);
+  //   filteredFilms = filterFilms(filmsData, filterComponent._name);
+  //   filterComponent.update(filteredFilms.length);
+  //   mainList.innerHTML = ``;
+  //   if (filteredFilms.length === 0) {
+  //     messageContainer.textContent = Message.FILTER;
+  //     messageContainer.classList.remove(HIDDEN_CLASS);
+  //   }
+  //   renderFilms(filteredFilms, Film, mainList);
+  //   hideExtraFilms();
+  //   setupFilmsLoader();
+  // };
+
+  searchContainer.appendChild(searchComponent.render());
+};
+
 const setupFooterStats = () => {
   const filmsCount = mainList.querySelectorAll(`.film-card`).length;
   footerStats.textContent = `${filmsCount} movie${filmsCount === 1 ? `` : `s`} inside`;
 };
 
-const onSearchInput = (evt) => {
-  const target = evt.target;
-  mainList.innerHTML = ``;
-  api.getFilms()
-    .then((films) => {
-      const filteredFilms = searchFilms(films, target.value);
-      messageContainer.classList.add(HIDDEN_CLASS);
-      renderFilms(filteredFilms, Film, mainList);
-      hideExtraFilms();
-      setupFilmsLoader();
-      if (filteredFilms.length === 0) {
-        messageContainer.classList.remove(HIDDEN_CLASS);
-        messageContainer.textContent = Message.SEARCH;
-      }
-    });
-};
+// const onSearchInput = (evt) => {
+//   const target = evt.target;
+//   mainList.innerHTML = ``;
+//   api.getFilms()
+//     .then((films) => {
+//       const filteredFilms = searchFilms(films, target.value);
+//       messageContainer.classList.add(HIDDEN_CLASS);
+//       renderFilms(filteredFilms, Film, mainList);
+//       hideExtraFilms();
+//       setupFilmsLoader();
+//       if (filteredFilms.length === 0) {
+//         messageContainer.classList.remove(HIDDEN_CLASS);
+//         messageContainer.textContent = Message.SEARCH;
+//       }
+//     });
+// };
 
 const renderStatistic = (data) => {
   statsContainer.innerHTML = ``;
@@ -208,6 +251,7 @@ api.getFilms()
     renderFilms(getRatedFilms(films), FilmExtra, ratedList);
     renderFilms(getCommentedFilms(films), FilmExtra, commentedList);
     renderFilters(filters, films);
+    renderSearch();
     renderStatistic(films);
     setupFooterStats();
     updateRating();
@@ -218,6 +262,6 @@ api.getFilms()
 
 statsLink.addEventListener(`click`, onStatsClick);
 filmsLoader.addEventListener(`click`, onLoaderClick);
-searchFild.addEventListener(`input`, onSearchInput);
+// searchFild.addEventListener(`input`, onSearchInput);
 
 // console.log(api.getFilms());
