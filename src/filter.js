@@ -18,7 +18,6 @@ export default class Filter extends Component {
   _onFilterClick(evt) {
     evt.preventDefault();
     this._isActive = !this._isActive;
-    // this._partialUpdate();
 
     if (typeof this._onFilter === `function`) {
       this._onFilter();
@@ -33,7 +32,7 @@ export default class Filter extends Component {
     return `
     <span>
       <a href="#${this._id}"
-        class="main-navigation__item ${this._isActive && ` main-navigation__item--active`}">
+        class="main-navigation__item ${this._isActive || this._name === `All movies` ? ` main-navigation__item--active` : ``}">
         ${this._name}
         <span
           class="main-navigation__item-count ${this._count === 0 || this._name === `All movies` ? ` visually-hidden` : ``}"

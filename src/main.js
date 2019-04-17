@@ -75,15 +75,10 @@ const renderFilms = (data, FilmConstructor, container) => {
 
         api.updateFilms({id: item.id, data: item.toRAW()})
         .then((newFilm) => {
-          // editTaskComponent.unblock();
           filmComponent.update(newFilm);
           popupComponent.update(newFilm);
           body.removeChild(popupComponent.element);
           popupComponent.unrender();
-        })
-        .catch(() => {
-          // editTaskComponent.shake();
-          // editTaskComponent.unblock();
         });
       };
 
@@ -136,11 +131,14 @@ const renderFilters = (filtersData, filmsData) => {
     filterComponent.getCount(filteredFilms.length);
 
     filterComponent.onFilter = () => {
+      document.querySelectorAll(`.main-navigation__item`).forEach((it) => it.classList.remove(`main-navigation__item--active`));
       filmsContainer.classList.remove(HIDDEN_CLASS);
       statsContainer.classList.add(HIDDEN_CLASS);
       messageContainer.classList.add(HIDDEN_CLASS);
       filteredFilms = filterFilms(filmsData, filterComponent._name);
       filterComponent.update(filteredFilms.length);
+      filterComponent._isActive = false;
+
       mainList.innerHTML = ``;
       if (filteredFilms.length === 0) {
         messageContainer.textContent = Message.FILTER;
