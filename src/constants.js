@@ -3,6 +3,13 @@ export const Message = {
   ERROR: `Something went wrong while loading movies. Check your connection or try again later`,
   FILTER: `Maybe at firs you'll add some films to this list?`,
   SEARCH: `Unable to find any movies on your request`,
+  COMMENT_ADD: `Comment added`,
+  COMMENT_DELETE: `Comment deleted`,
+};
+
+export const KeyCode = {
+  ESC: 27,
+  ENTER: 13,
 };
 
 export const FilterName = {
@@ -32,3 +39,5 @@ export const Rating = {
 export const HIDDEN_CLASS = `visually-hidden`;
 
 export const VISIBLE_FILMS_NUMBER = 5;
+
+export const msPerMinute = 60000;

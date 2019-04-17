@@ -25,7 +25,6 @@ const messageContainer = document.querySelector(`.films-list__title`);
 const searchContainer = document.querySelector(`.header__search`);
 const footerStats = document.querySelector(`.footer__statistics p`);
 const headerRating = document.querySelector(`.profile__rating`);
-const searchFild = document.querySelector(`.search__field`);
 
 const mainList = filmLists[0];
 const ratedList = filmLists[1];
@@ -52,7 +51,6 @@ const onLoaderClick = () => {
   }
   setupFilmsLoader();
 };
-
 
 const getRatedFilms = (data) => {
   return data.slice()
@@ -176,24 +174,6 @@ const renderSearch = () => {
         }
       });
   };
-  // let filteredFilms = filterFilms(filmsData, filterComponent._name);
-  // filterComponent.getCount(filteredFilms.length);
-
-  // filterComponent.onFilter = () => {
-  //   filmsContainer.classList.remove(HIDDEN_CLASS);
-  //   statsContainer.classList.add(HIDDEN_CLASS);
-  //   messageContainer.classList.add(HIDDEN_CLASS);
-  //   filteredFilms = filterFilms(filmsData, filterComponent._name);
-  //   filterComponent.update(filteredFilms.length);
-  //   mainList.innerHTML = ``;
-  //   if (filteredFilms.length === 0) {
-  //     messageContainer.textContent = Message.FILTER;
-  //     messageContainer.classList.remove(HIDDEN_CLASS);
-  //   }
-  //   renderFilms(filteredFilms, Film, mainList);
-  //   hideExtraFilms();
-  //   setupFilmsLoader();
-  // };
 
   searchContainer.appendChild(searchComponent.render());
 };
@@ -202,23 +182,6 @@ const setupFooterStats = () => {
   const filmsCount = mainList.querySelectorAll(`.film-card`).length;
   footerStats.textContent = `${filmsCount} movie${filmsCount === 1 ? `` : `s`} inside`;
 };
-
-// const onSearchInput = (evt) => {
-//   const target = evt.target;
-//   mainList.innerHTML = ``;
-//   api.getFilms()
-//     .then((films) => {
-//       const filteredFilms = searchFilms(films, target.value);
-//       messageContainer.classList.add(HIDDEN_CLASS);
-//       renderFilms(filteredFilms, Film, mainList);
-//       hideExtraFilms();
-//       setupFilmsLoader();
-//       if (filteredFilms.length === 0) {
-//         messageContainer.classList.remove(HIDDEN_CLASS);
-//         messageContainer.textContent = Message.SEARCH;
-//       }
-//     });
-// };
 
 const renderStatistic = (data) => {
   statsContainer.innerHTML = ``;
@@ -262,6 +225,5 @@ api.getFilms()
 
 statsLink.addEventListener(`click`, onStatsClick);
 filmsLoader.addEventListener(`click`, onLoaderClick);
-// searchFild.addEventListener(`input`, onSearchInput);
 
 // console.log(api.getFilms());

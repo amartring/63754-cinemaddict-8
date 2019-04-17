@@ -1,25 +1,20 @@
 import {FilterName} from './constants.js';
 
 export const filterFilms = (data, filterName) => {
-  let filteredFilms = data;
   switch (filterName) {
     case FilterName.all:
-      filteredFilms = data;
-      break;
+      return data;
 
     case FilterName.watchlist:
-      filteredFilms = data.filter((it) => it.isOnWatchlist);
-      break;
+      return data.filter((it) => it.isOnWatchlist);
 
     case FilterName.history:
-      filteredFilms = data.filter((it) => it.isWatched);
-      break;
+      return data.filter((it) => it.isWatched);
 
     case FilterName.favorites:
-      filteredFilms = data.filter((it) => it.isFavorite);
-      break;
+      return data.filter((it) => it.isFavorite);
   }
-  return filteredFilms;
+  return data;
 };
 
 export const searchFilms = (data, request) => {

@@ -1,5 +1,6 @@
 import Component from './component.js';
 import moment from 'moment';
+import {Message, KeyCode, msPerMinute} from './constants.js';
 
 export default class Popup extends Component {
   constructor(data) {
@@ -31,6 +32,7 @@ export default class Popup extends Component {
     this._onEscPress = this._onEscPress.bind(this);
     this._onEmojiChange = this._onEmojiChange.bind(this);
     this._onCommentAdd = this._onCommentAdd.bind(this);
+    this._onCommentDelete = this._onCommentDelete.bind(this);
     this._onRatingChange = this._onRatingChange.bind(this);
     this._onWatchlistChange = this._onWatchlistChange.bind(this);
     this._onWatchedChange = this._onWatchedChange.bind(this);
@@ -84,7 +86,7 @@ export default class Popup extends Component {
   _onCommentAdd(evt) {
     const commentsList = this._element.querySelector(`.film-details__comments-list`);
     const commentField = this._element.querySelector(`.film-details__comment-input`);
-    if ((evt.ctrlKey || evt.metaKey) && evt.keyCode === 13 && commentField.value) {
+    if ((evt.ctrlKey || evt.metaKey) && evt.keyCode === KeyCode.ENTER && commentField.value) {
       const newComment = {};
       newComment.comment = commentField.value;
       newComment.author = `Super Duper Alice Cooper`;
@@ -97,7 +99,20 @@ export default class Popup extends Component {
 
       commentsList.innerHTML = this._getCommentsTemplate();
       this._partialUpdate();
+      this._element.querySelector(`.film-details__watched-reset`).classList.remove(`visually-hidden`);
+      this._element.querySelector(`.film-details__watched-status`).textContent = Message.COMMENT_ADD;
     }
+  }
+
+  _onCommentDelete() {
+    const commentsList = this._element.querySelector(`.film-details__comments-list`);
+    const comment = this._comments.reverse().find((it) => it.author === `Super Duper Alice Cooper`);
+    const index = this._comments.indexOf(comment);
+    this._comments.splice(index, 1);
+    commentsList.innerHTML = this._getCommentsTemplate();
+    this._partialUpdate();
+    this._element.querySelector(`.film-details__watched-reset`).classList.add(`visually-hidden`);
+    this._element.querySelector(`.film-details__watched-status`).textContent = Message.COMMENT_DELETE;
   }
 
   _onRatingChange() {
@@ -131,7 +146,7 @@ export default class Popup extends Component {
   }
 
   _onEscPress(evt) {
-    if (evt.keyCode === 27) {
+    if (evt.keyCode === KeyCode.ESC) {
       evt.preventDefault();
       const formData = new FormData(this._element.querySelector(`.film-details__inner`));
       const newData = this._processForm(formData);
@@ -206,7 +221,7 @@ export default class Popup extends Component {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${Math.floor(moment.duration(this._duration * 1000 * 60).asMinutes())} min</td>
+                <td class="film-details__cell">${Math.floor(moment.duration(this._duration * msPerMinute).asMinutes())} min</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
@@ -271,11 +286,8 @@ export default class Popup extends Component {
 
         <section class="film-details__user-rating-wrap">
           <div class="film-details__user-rating-controls">
-            <span
-              class="film-details__watched-status">
-                ${this._isWatched ? `Already watched` : `Will watch`}
-            </span>
-            <button class="film-details__watched-reset" type="button">undo</button>
+            <span class="film-details__watched-status"></span>
+            <button class="film-details__watched-reset visually-hidden" type="button">undo</button>
           </div>
 
           <div class="film-details__user-score">
@@ -341,6 +353,8 @@ export default class Popup extends Component {
         .addEventListener(`click`, this._onEmojiChange);
     this._element.querySelector(`.film-details__new-comment`)
         .addEventListener(`keydown`, this._onCommentAdd);
+    this._element.querySelector(`.film-details__watched-reset`)
+        .addEventListener(`click`, this._onCommentDelete);
     this._element.querySelector(`.film-details__user-rating-score`)
         .addEventListener(`click`, this._onRatingChange);
 
@@ -360,6 +374,8 @@ export default class Popup extends Component {
         .removeEventListener(`click`, this._onEmojiChange);
     this._element.querySelector(`.film-details__new-comment`)
         .removeEventListener(`keydown`, this._onCommentAdd);
+    this._element.querySelector(`.film-details__watched-reset`)
+        .removeEventListener(`click`, this._onCommentDelete);
     this._element.querySelector(`.film-details__user-rating-score`)
         .removeEventListener(`click`, this._onRatingChange);
 

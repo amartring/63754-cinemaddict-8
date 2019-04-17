@@ -1,5 +1,6 @@
 import Component from './component.js';
 import moment from 'moment';
+import {msPerMinute} from './constants.js';
 
 export default class Film extends Component {
   constructor(data) {
@@ -117,7 +118,7 @@ export default class Film extends Component {
         <p class="film-card__info">
           <span class="film-card__year">${moment(this._date).format(`YYYY`)}</span>
           <span class="film-card__duration">
-            ${moment.duration(this._duration * 1000 * 60).hours()}:${moment.duration(this._duration * 1000 * 60).minutes()}
+            ${moment.duration(this._duration * msPerMinute).hours()}:${moment.duration(this._duration * msPerMinute).minutes()}
           </span>
           <span class="film-card__genre">${this._genre.join(` `)}</span>
         </p>
