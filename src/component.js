@@ -17,6 +17,10 @@ export default class Component {
     return this._element;
   }
 
+  isFunction(fn) {
+    return typeof fn === `function` && fn();
+  }
+
   bind() {}
 
   unbind() {}

@@ -1,16 +1,11 @@
 import Popup from './popup';
+import filters from '../filters/filters-data';
+import {renderFilters} from '../filters/setup-filters';
+import {renderStatistic} from '../statistic/setup-satistic';
 import {api} from '../main';
 import {updateRating} from '../setup-main';
-import {HIDDEN_CLASS} from '../constants';
 
 const body = document.querySelector(`body`);
-
-const updateFilterCount = (id, state) => {
-  let count = +(document.querySelector(id).textContent);
-  state ? count++ : count--;
-  document.querySelector(id).textContent = count;
-  count ? document.querySelector(id).classList.remove(HIDDEN_CLASS) : document.querySelector(id).classList.add(HIDDEN_CLASS);
-};
 
 export const renderFilms = (data, FilmConstructor, container) => {
   data.forEach((item) => {
@@ -23,12 +18,15 @@ export const renderFilms = (data, FilmConstructor, container) => {
       popupComponent.onClose = (newObject) => {
         item = Object.assign(item, newObject);
 
-        api.updateFilms({id: item.id, data: item.toRAW()})
+        api.updateFilm({id: item.id, data: item.toRAW()})
         .then((newFilm) => {
           filmComponent.update(newFilm);
           popupComponent.update(newFilm);
           body.removeChild(popupComponent.element);
           popupComponent.unrender();
+          renderFilters(filters, data);
+          renderStatistic(data);
+          updateRating(data);
         });
       };
 
@@ -37,19 +35,25 @@ export const renderFilms = (data, FilmConstructor, container) => {
     };
 
     filmComponent.onAddToWatchList = (newObj) => {
-      filmComponent.update((Object.assign(item, newObj)));
-      updateFilterCount(`#watchlist`, filmComponent._isOnWatchlist);
+      item = Object.assign(item, newObj);
+      api.updateFilm({id: item.id, data: item.toRAW()});
+      renderFilters(filters, data);
+      renderStatistic(data);
     };
 
     filmComponent.onMarkAsWatched = (newObj) => {
-      filmComponent.update((Object.assign(item, newObj)));
-      updateFilterCount(`#history`, filmComponent._isWatched);
-      updateRating();
+      item = Object.assign(item, newObj);
+      api.updateFilm({id: item.id, data: item.toRAW()});
+      renderFilters(filters, data);
+      renderStatistic(data);
+      updateRating(data);
     };
 
     filmComponent.onMarkAsFavorite = (newObj) => {
-      filmComponent.update((Object.assign(item, newObj)));
-      updateFilterCount(`#favorites`, filmComponent._isFavorite);
+      item = Object.assign(item, newObj);
+      api.updateFilm({id: item.id, data: item.toRAW()});
+      renderFilters(filters, data);
+      renderStatistic(data);
     };
 
     container.appendChild(filmComponent.render());

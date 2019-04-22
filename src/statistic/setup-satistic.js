@@ -10,6 +10,10 @@ export const renderStatistic = (data) => {
   statsContainer.appendChild(statsComponent.render());
 };
 
+export const hideStatistic = () => {
+  statsContainer.classList.add(HIDDEN_CLASS);
+};
+
 const onStatsClick = () => {
   filmsContainer.classList.add(HIDDEN_CLASS);
   statsContainer.classList.remove(HIDDEN_CLASS);

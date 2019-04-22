@@ -36,25 +36,14 @@ export default class Popup extends Component {
     this._onClose = null;
   }
 
-  _processForm(formData) {
-    const entry = {
+  _processForm() {
+    return {
       userRating: ``,
       comments: this._comments,
       isOnWatchlist: this._isOnWatchlist,
       isWatched: this._isWatched,
       isFavorite: this._isFavorite,
     };
-
-    const popupMapper = Popup.createMapper(entry);
-
-    for (const pair of formData.entries()) {
-      const [property, value] = pair;
-      if (popupMapper[property]) {
-        popupMapper[property](value);
-      }
-    }
-
-    return entry;
   }
 
   _partialUpdate() {
@@ -124,17 +113,20 @@ export default class Popup extends Component {
     this._element.querySelector(`.film-details__user-rating span`).innerHTML = this._userRating;
   }
 
-  _onWatchlistChange() {
+  _onWatchlistChange(evt) {
+    evt.preventDefault();
     this._isOnWatchlist = !this._isOnWatchlist;
     this._partialUpdate();
   }
 
-  _onWatchedChange() {
+  _onWatchedChange(evt) {
+    evt.preventDefault();
     this._isWatched = !this._isWatched;
     this._partialUpdate();
   }
 
-  _onFavoriteChange() {
+  _onFavoriteChange(evt) {
+    evt.preventDefault();
     this._isFavorite = !this._isFavorite;
     this._partialUpdate();
   }
@@ -143,22 +135,26 @@ export default class Popup extends Component {
     evt.preventDefault();
     const formData = new FormData(this._element.querySelector(`.film-details__inner`));
     const newData = this._processForm(formData);
-    if (typeof this._onClose === `function`) {
-      this._onClose(newData);
-    }
+    this.isFunction(this._onClose(newData));
     this.update(newData);
   }
 
   _onEscPress(evt) {
     if (evt.keyCode === KeyCode.ESC) {
-      evt.preventDefault();
-      const formData = new FormData(this._element.querySelector(`.film-details__inner`));
-      const newData = this._processForm(formData);
-      if (typeof this._onClose === `function`) {
-        this._onClose(newData);
-      }
-      this.update(newData);
+      this._onCloseClick(evt);
     }
+  }
+
+  set onAddToWatchList(fn) {
+    this._onAddToWatchList = fn;
+  }
+
+  set onMarkAsWatched(fn) {
+    this._onMarkAsWatched = fn;
+  }
+
+  set onMarkAsFavorite(fn) {
+    this._onMarkAsFavorite = fn;
   }
 
   set onClose(fn) {
@@ -244,16 +240,16 @@ export default class Popup extends Component {
         </div>
 
         <section class="film-details__controls">
-          <input type="checkbox" class="film-details__control-input visually-hidden"
-          id="watchlist" name="watchlist" ${this._isOnWatchlist && `checked`}>
-          <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="toWatchlist" name="watchlist"
+          ${this._isOnWatchlist && `checked`}>
+          <label for="toWatchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
-          <input type="checkbox" class="film-details__control-input visually-hidden"
-          id="watched" name="watched" ${this._isWatched && `checked`}>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched"
+          ${this._isWatched && `checked`}>
           <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-          <input type="checkbox" class="film-details__control-input visually-hidden"
-          id="favorite" name="favorite"  ${this._isFavorite && `checked`}>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite"
+          ${this._isFavorite && `checked`}>
           <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
         </section>
 
@@ -361,13 +357,9 @@ export default class Popup extends Component {
         .addEventListener(`click`, this._onCommentDelete);
     this._element.querySelector(`.film-details__user-rating-score`)
         .addEventListener(`click`, this._onRatingChange);
-
-    this._element.querySelector(`#watchlist`)
-        .addEventListener(`click`, this._onWatchlistChange);
-    this._element.querySelector(`#watched`)
-        .addEventListener(`click`, this._onWatchedChange);
-    this._element.querySelector(`#favorite`)
-        .addEventListener(`click`, this._onFavoriteChange);
+    this._element.querySelector(`#toWatchlist`).addEventListener(`click`, this._onWatchlistChange);
+    this._element.querySelector(`#watched`).addEventListener(`click`, this._onWatchedChange);
+    this._element.querySelector(`#favorite`).addEventListener(`click`, this._onFavoriteChange);
   }
 
   unbind() {
@@ -382,13 +374,9 @@ export default class Popup extends Component {
         .removeEventListener(`click`, this._onCommentDelete);
     this._element.querySelector(`.film-details__user-rating-score`)
         .removeEventListener(`click`, this._onRatingChange);
-
-    this._element.querySelector(`#watchlist`)
-        .removeEventListener(`click`, this._onWatchlistChange);
-    this._element.querySelector(`#watched`)
-        .removeEventListener(`click`, this._onWatchedChange);
-    this._element.querySelector(`#favorite`)
-        .removeEventListener(`click`, this._onFavoriteChange);
+    this._element.querySelector(`#toWatchlist`).removeEventListener(`click`, this._onWatchlistChange);
+    this._element.querySelector(`#watched`).removeEventListener(`click`, this._onWatchedChange);
+    this._element.querySelector(`#favorite`).removeEventListener(`click`, this._onFavoriteChange);
   }
 
   update(data) {
@@ -396,13 +384,5 @@ export default class Popup extends Component {
     this._isOnWatchlist = data.isOnWatchlist;
     this._isWatched = data.isWatched;
     this._isFavorite = data.isFavorite;
-  }
-
-  static createMapper(target) {
-    return {
-      score: (value) => {
-        target.userRating = parseInt(value, 10);
-      },
-    };
   }
 }

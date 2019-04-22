@@ -8,8 +8,8 @@ const headerRating = document.querySelector(`.profile__rating`);
 const footerStats = document.querySelector(`.footer__statistics p`);
 const filmsLoader = filmsContainer.querySelector(`.films-list__show-more`);
 
-export const updateRating = () => {
-  const count = +(document.querySelector(`#history`).textContent);
+export const updateRating = (data) => {
+  const count = (data.filter((it) => it.isWatched)).length;
   if (count <= Rating.low.count) {
     headerRating.textContent = Rating.low.name;
   } else if (count <= Rating.medium.count) {
@@ -24,7 +24,7 @@ export const setupFooterStats = () => {
   footerStats.textContent = `${filmsCount} movie${filmsCount === 1 ? `` : `s`} inside`;
 };
 
-export const setupFilmsLoader = function () {
+export const setupFilmsLoader = () => {
   const invisibleFilms = mainList.querySelectorAll(`.film-card.${HIDDEN_CLASS}`);
   return invisibleFilms.length === 0
     ? filmsLoader.classList.add(HIDDEN_CLASS)

@@ -38,57 +38,40 @@ export default class Film extends Component {
     const oldElement = this._element;
     this._element = this.render();
     oldElement.parentNode.replaceChild(this._element, oldElement);
+
     this._element.querySelector(`.film-card__comments span`).textContent = this._comments.length;
   }
 
   _onCommentsClick(evt) {
     evt.preventDefault();
     const newData = this._processForm();
-
-    if (typeof this._onClick === `function`) {
-      this._onClick(newData);
-    }
-
+    this.isFunction(this._onClick(newData));
     this.update(newData);
   }
 
   _onWatchlistChange(evt) {
     evt.preventDefault();
     this._isOnWatchlist = !this._isOnWatchlist;
-    const newData = this._processForm();
-
-    if (typeof this._onAddToWatchList === `function`) {
-      this._onAddToWatchList(newData);
-    }
-
-    this.update(newData);
     this._partialUpdate();
+    const newData = this._processForm();
+    this.isFunction(this._onAddToWatchList(newData));
   }
 
   _onWatchedChange(evt) {
     evt.preventDefault();
     this._isWatched = !this._isWatched;
-    const newData = this._processForm();
-
-    if (typeof this._onMarkAsWatched === `function`) {
-      this._onMarkAsWatched(newData);
-    }
-
-    this.update(newData);
     this._partialUpdate();
+    const newData = this._processForm();
+    this.isFunction(this._onMarkAsWatched(newData));
   }
 
   _onFavoriteChange(evt) {
     evt.preventDefault();
     this._isFavorite = !this._isFavorite;
-    const newData = this._processForm();
-
-    if (typeof this._onMarkAsFavorite === `function`) {
-      this._onMarkAsFavorite(newData);
-    }
-
-    this.update(newData);
     this._partialUpdate();
+    const newData = this._processForm();
+    this.isFunction(this._onMarkAsFavorite(newData));
+
   }
 
   set onAddToWatchList(fn) {

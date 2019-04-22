@@ -1,8 +1,8 @@
-import Chart from 'chart.js';
 import Component from '../component';
+import Chart from 'chart.js';
 import moment from 'moment';
-import {objectToSortedArray, rank, createElement} from '../util';
 import {getChart} from './get-chart';
+import {objectToSortedArray, rank, createElement} from '../util';
 import {StatsFilterName, DateFormate, MS_PER_MINUTE} from '../constants';
 
 export default class Statistic extends Component {
@@ -15,33 +15,27 @@ export default class Statistic extends Component {
   }
 
   _filterByTime(filterValue) {
-    let filteredFilms = this._watchedFilms;
     switch (filterValue) {
       case StatsFilterName.all:
-        filteredFilms = this._watchedFilms;
-        break;
+        return this._watchedFilms;
 
       case StatsFilterName.today:
-        filteredFilms = this._watchedFilms.filter((it) =>
+        return this._watchedFilms.filter((it) =>
           moment(it.userDate).format(DateFormate.STATS) === moment().format(DateFormate.STATS));
-        break;
 
       case StatsFilterName.week:
-        filteredFilms = this._watchedFilms.filter((it) =>
+        return this._watchedFilms.filter((it) =>
           moment(it.userDate).isAfter(moment().subtract(7, `days`)));
-        break;
 
       case StatsFilterName.month:
-        filteredFilms = this._watchedFilms.filter((it) =>
+        return this._watchedFilms.filter((it) =>
           moment(it.userDate).isAfter(moment().subtract(1, `months`)));
-        break;
 
       case StatsFilterName.year:
-        filteredFilms = this._watchedFilms.filter((it) =>
+        return this._watchedFilms.filter((it) =>
           moment(it.userDate).isAfter(moment().subtract(1, `year`)));
-        break;
     }
-    return filteredFilms;
+    return this._watchedFilms;
   }
 
   _filterByGenre(films) {
@@ -122,19 +116,13 @@ export default class Statistic extends Component {
     `;
   }
 
-  _onFilterChange(evt) {
-    evt.preventDefault();
-    const target = evt.target;
-
-    target.checked = true;
-
-    const filteredDatas = this._filterByTime(target.value);
-
+  _onFilterChange() {
+    const filter = this._element.querySelector(`.statistic__filters-input:checked`).value;
+    const filteredDatas = this._filterByTime(filter);
     this._element.querySelector(`.statistic__item-text--duration`).innerHTML = this._getDurationTemplate(filteredDatas);
     this._element.querySelector(`.statistic__item-text--top-genre`).innerHTML = this._getTopGenreTemplate(filteredDatas);
     this._element.querySelector(`.statistic__item-text--count`).innerHTML = this._getWatchedTemplate(filteredDatas);
     this._element.querySelector(`.statistic__rank-label`).innerHTML = this._getRank(filteredDatas);
-
     this._genreChart.destroy();
     this._createChart(filteredDatas);
   }

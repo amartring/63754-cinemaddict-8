@@ -9,9 +9,7 @@ export default class Search extends Component {
 
   _onSearchInput(evt) {
     evt.preventDefault();
-    if (typeof this._onSearch === `function`) {
-      this._onSearch(evt);
-    }
+    this.isFunction(this._onSearch(evt));
   }
 
   set onSearch(fn) {
@@ -28,12 +26,12 @@ export default class Search extends Component {
 
   bind() {
     this._element.querySelector(`.search__field`)
-        .addEventListener(`input`, this._onSearchInput);
+        .addEventListener(`keyup`, this._onSearchInput);
   }
 
   unbind() {
     this._element.querySelector(`.search__field`)
-        .removeEventListener(`input`, this._onSearchInput);
+        .removeEventListener(`keyup`, this._onSearchInput);
     this._onSearch = null;
   }
 }

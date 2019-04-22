@@ -19,7 +19,7 @@ export default class FilmExtra extends Component {
 
   _onCommentsClick(evt) {
     evt.preventDefault();
-    return typeof this._onClick === `function` && this._onClick();
+    this.isFunction(this._onClick);
   }
 
   set onClick(fn) {

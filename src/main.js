@@ -40,7 +40,7 @@ api.getFilms()
     renderSearch();
     renderStatistic(films);
     setupFooterStats();
-    updateRating();
+    updateRating(films);
   })
   .catch(() => {
     showLoadingMessage(Message.ERROR);

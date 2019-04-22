@@ -36,7 +36,7 @@ export default class API extends Component {
       .then(ModelFilm.parseFilm);
   }
 
-  updateFilms({id, data}) {
+  updateFilm({id, data}) {
     return this._load({
       url: `${URL}/${id}`,
       method: Method.PUT,

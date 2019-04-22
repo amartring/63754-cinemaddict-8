@@ -16,10 +16,7 @@ export default class Filter extends Component {
   _onFilterClick(evt) {
     evt.preventDefault();
     this._isActive = !this._isActive;
-
-    if (typeof this._onFilter === `function`) {
-      this._onFilter();
-    }
+    this.isFunction(this._onFilter);
   }
 
   set onFilter(fn) {

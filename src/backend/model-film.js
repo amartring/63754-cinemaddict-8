@@ -26,24 +26,31 @@ export default class ModelFilm {
     return {
       'id': this.id,
       'comments': this.comments,
-      'title': this.title,
-      'alternative_title': this.altTitle,
-      'poster': this.poster,
-      'description': this.description,
-      'totalRating': this.totalRating,
-      'actors': this.actors,
-      'restriction': this.restriction,
-      'director': this.director,
-      'writers': this.writers,
-      'genre': this.genre,
-      'duration': this.duration,
-      'date': this.date,
-      'country': this.country,
-      'watchlist': this.isOnWatchlist,
-      'already_watched': this.isWatched,
-      'favorite': this.isFavorite,
-      'personal_rating': this.userRating,
-      'watching_date': this.userDate,
+      'film_info': {
+        'title': this.title,
+        'alternative_title': this.altTitle,
+        'poster': this.poster,
+        'description': this.description,
+        'totalRating': this.totalRating,
+        'actors': this.actors,
+        'restriction': this.restriction,
+        'director': this.director,
+        'writers': this.writers,
+        'genre': this.genre,
+        'duration': this.duration,
+        'release': {
+          'date': this.date,
+          'release_country': this.country,
+        },
+
+      },
+      'user_details': {
+        'watchlist': this.isOnWatchlist,
+        'already_watched': this.isWatched,
+        'favorite': this.isFavorite,
+        'personal_rating': this.userRating,
+        'watching_date': this.userDate,
+      }
     };
   }
 
