@@ -1,10 +1,10 @@
 import Chart from 'chart.js';
-import Component from './component';
+import Component from '../component';
 import moment from 'moment';
-import {createElement} from './create-element';
-import {objectToSortedArray, rank} from './util';
+import {createElement} from '../create-element';
+import {objectToSortedArray, rank} from '../util';
 import {getChart} from './get-chart';
-import {StatsFilterName, DateFormate, MS_PER_MINUTE} from './constants';
+import {StatsFilterName, DateFormate, MS_PER_MINUTE} from '../constants';
 
 export default class Statistic extends Component {
   constructor(data) {

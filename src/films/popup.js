@@ -1,6 +1,6 @@
-import Component from './component';
+import Component from '../component';
 import moment from 'moment';
-import {Message, KeyCode, DateFormate, MS_PER_MINUTE} from './constants';
+import {Message, KeyCode, DateFormate, MS_PER_MINUTE} from '../constants';
 
 export default class Popup extends Component {
   constructor(data) {
@@ -64,6 +64,36 @@ export default class Popup extends Component {
     oldElement.parentNode.replaceChild(this._element, oldElement);
   }
 
+  _addNewComment() {
+    const commentsList = this._element.querySelector(`.film-details__comments-list`);
+    const commentField = this._element.querySelector(`.film-details__comment-input`);
+    const newComment = {};
+    newComment.comment = commentField.value;
+    newComment.author = `Super Duper Alice Cooper`;
+    newComment.emotion = this._element.querySelector(`.film-details__emoji-item:checked`).value;
+    newComment.date = moment().toDate();
+
+    this._comments.push(newComment);
+    this._element.querySelector(`.film-details__add-emoji`).checked = false;
+    commentField.value = ``;
+
+    commentsList.innerHTML = this._getCommentsTemplate();
+    this._partialUpdate();
+    this._element.querySelector(`.film-details__watched-reset`).classList.remove(`visually-hidden`);
+    this._element.querySelector(`.film-details__watched-status`).textContent = Message.COMMENT_ADD;
+  }
+
+  _deleteComment() {
+    const commentsList = this._element.querySelector(`.film-details__comments-list`);
+    const comment = this._comments.reverse().find((it) => it.author === `Super Duper Alice Cooper`);
+    const index = this._comments.indexOf(comment);
+    this._comments.splice(index, 1);
+    commentsList.innerHTML = this._getCommentsTemplate();
+    this._partialUpdate();
+    this._element.querySelector(`.film-details__watched-reset`).classList.add(`visually-hidden`);
+    this._element.querySelector(`.film-details__watched-status`).textContent = Message.COMMENT_DELETE;
+  }
+
   _getEmoji(emo) {
     const emoji = {
       grinning: `😀`,
@@ -79,35 +109,14 @@ export default class Popup extends Component {
   }
 
   _onCommentAdd(evt) {
-    const commentsList = this._element.querySelector(`.film-details__comments-list`);
     const commentField = this._element.querySelector(`.film-details__comment-input`);
     if ((evt.ctrlKey || evt.metaKey) && evt.keyCode === KeyCode.ENTER && commentField.value) {
-      const newComment = {};
-      newComment.comment = commentField.value;
-      newComment.author = `Super Duper Alice Cooper`;
-      newComment.emotion = this._element.querySelector(`.film-details__emoji-item:checked`).value;
-      newComment.date = moment().toDate();
-
-      this._comments.push(newComment);
-      this._element.querySelector(`.film-details__add-emoji`).checked = false;
-      commentField.value = ``;
-
-      commentsList.innerHTML = this._getCommentsTemplate();
-      this._partialUpdate();
-      this._element.querySelector(`.film-details__watched-reset`).classList.remove(`visually-hidden`);
-      this._element.querySelector(`.film-details__watched-status`).textContent = Message.COMMENT_ADD;
+      this._addNewComment();
     }
   }
 
   _onCommentDelete() {
-    const commentsList = this._element.querySelector(`.film-details__comments-list`);
-    const comment = this._comments.reverse().find((it) => it.author === `Super Duper Alice Cooper`);
-    const index = this._comments.indexOf(comment);
-    this._comments.splice(index, 1);
-    commentsList.innerHTML = this._getCommentsTemplate();
-    this._partialUpdate();
-    this._element.querySelector(`.film-details__watched-reset`).classList.add(`visually-hidden`);
-    this._element.querySelector(`.film-details__watched-status`).textContent = Message.COMMENT_DELETE;
+    this._deleteComment();
   }
 
   _onRatingChange() {

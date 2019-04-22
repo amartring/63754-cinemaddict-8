@@ -29,17 +29,14 @@ export const StatsFilterName = {
 
 export const Rating = {
   low: {
-    minCount: 1,
-    maxCount: 10,
+    count: 10,
     name: `novice`,
   },
   medium: {
-    minCount: 11,
-    maxCount: 20,
+    count: 20,
     name: `fan`,
   },
   high: {
-    minCount: 21,
     name: `movie buff`,
   },
 };
