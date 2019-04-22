@@ -1,6 +1,6 @@
-import Component from './component.js';
+import Component from './component';
 import moment from 'moment';
-import {Message, KeyCode, msPerMinute} from './constants.js';
+import {Message, KeyCode, msPerMinute} from './constants';
 
 export default class Popup extends Component {
   constructor(data) {
@@ -24,9 +24,9 @@ export default class Popup extends Component {
     this._userRating = data.userRating;
     this._userDate = data.userDate;
 
-    this._isOnWatchlist = false;
-    this._isWatched = false;
-    this._isFavorite = false;
+    this._isOnWatchlist = data.isOnWatchlist;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
 
     this._onCloseClick = this._onCloseClick.bind(this);
     this._onEscPress = this._onEscPress.bind(this);

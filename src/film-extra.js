@@ -1,4 +1,4 @@
-import Component from './component.js';
+import Component from './component';
 import moment from 'moment';
 
 export default class FilmExtra extends Component {

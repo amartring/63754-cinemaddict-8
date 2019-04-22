@@ -1,6 +1,6 @@
-import Component from './component.js';
+import Component from './component';
 import moment from 'moment';
-import {msPerMinute} from './constants.js';
+import {msPerMinute} from './constants';
 
 export default class Film extends Component {
   constructor(data) {

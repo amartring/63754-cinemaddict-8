@@ -1,4 +1,4 @@
-import {FilterName} from './constants.js';
+import {FilterName} from './constants';
 
 export const filterFilms = (data, filterName) => {
   switch (filterName) {

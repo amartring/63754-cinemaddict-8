@@ -1,5 +1,5 @@
-import Component from './component.js';
-import ModelFilm from './model-film.js';
+import Component from './component';
+import ModelFilm from './model-film';
 
 export const Method = {
   GET: `GET`,

@@ -1,5 +1,5 @@
 import {shuffleArray, getRandomNumber} from './util';
-import {FilterName} from './constants.js';
+import {FilterName} from './constants';
 
 const getDescription = () => {
   const description = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.

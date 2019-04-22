@@ -1,13 +1,13 @@
-import Film from './film.js';
-import FilmExtra from './film-extra.js';
-import Popup from './popup.js';
-import Filter from './filter.js';
-import Statistic from './statistic.js';
-import Search from './search.js';
-import API from './api.js';
-import {filters} from './data.js';
-import {HIDDEN_CLASS, VISIBLE_FILMS_NUMBER, Message, Rating} from './constants.js';
-import {filterFilms, searchFilms} from './filter-films.js';
+import Film from './film';
+import FilmExtra from './film-extra';
+import Popup from './popup';
+import Filter from './filter';
+import Statistic from './statistic';
+import Search from './search';
+import API from './api';
+import {filters} from './data';
+import {HIDDEN_CLASS, VISIBLE_FILMS_NUMBER, Message, Rating} from './constants';
+import {filterFilms, searchFilms} from './filter-films';
 
 const AUTHORIZATION = `Basic dXNlckBwYXNzd35yZAo=${Math.random()}`;
 const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;

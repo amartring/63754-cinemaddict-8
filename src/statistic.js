@@ -1,9 +1,9 @@
-import Chart from 'chart.js';
-import Component from './component.js';
+import Chart from 'chart';
+import Component from './component';
 import moment from 'moment';
-import {createElement} from './create-element.js';
-import {objectToSortedArray, rank} from './util.js';
-import {getChart} from './get-chart.js';
+import {createElement} from './create-element';
+import {objectToSortedArray, rank} from './util';
+import {getChart} from './get-chart';
 
 export default class Statistic extends Component {
   constructor(data) {
