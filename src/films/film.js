@@ -71,7 +71,6 @@ export default class Film extends Component {
     this._partialUpdate();
     const newData = this._processForm();
     this.isFunction(this._onMarkAsFavorite(newData));
-
   }
 
   set onAddToWatchList(fn) {
