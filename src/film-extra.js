@@ -13,9 +13,7 @@ export default class FilmExtra extends Component {
     this._date = data.date;
     this._duration = data.duration;
     this._genre = data.genre;
-
     this._onCommentsClick = this._onCommentsClick.bind(this);
-
     this._onClick = null;
   }
 

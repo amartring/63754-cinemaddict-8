@@ -1,19 +1,6 @@
 import Component from './component';
 import ModelFilm from './model-film';
-
-export const Method = {
-  GET: `GET`,
-  POST: `POST`,
-  PUT: `PUT`,
-  DELETE: `DELETE`
-};
-
-export const StatusCode = {
-  SUCCESS: 200,
-  REDIRECTION: 300,
-};
-
-export const URL = `movies`;
+import {Method, StatusCode, URL} from './constants';
 
 const checkStatus = (response) => {
   return response.status >= StatusCode.SUCCESS && response.status < StatusCode.REDIRECTION

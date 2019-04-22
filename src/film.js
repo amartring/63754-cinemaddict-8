@@ -14,16 +14,13 @@ export default class Film extends Component {
     this._date = data.date;
     this._duration = data.duration;
     this._genre = data.genre;
-
     this._isOnWatchlist = data.isOnWatchlist;
     this._isWatched = data.isWatched;
     this._isFavorite = data.isFavorite;
-
     this._onCommentsClick = this._onCommentsClick.bind(this);
     this._onWatchlistChange = this._onWatchlistChange.bind(this);
     this._onWatchedChange = this._onWatchedChange.bind(this);
     this._onFavoriteChange = this._onFavoriteChange.bind(this);
-
     this._onClick = null;
   }
 

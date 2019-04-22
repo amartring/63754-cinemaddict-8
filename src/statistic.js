@@ -11,9 +11,7 @@ export default class Statistic extends Component {
     super();
     this._films = data;
     this._watchedFilms = data.filter((it) => it.isWatched);
-
     this._onFilterChange = this._onFilterChange.bind(this);
-
     this._onFilter = null;
   }
 

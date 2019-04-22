@@ -19,15 +19,11 @@ export default class Popup extends Component {
     this._writers = data.writers;
     this._actors = data.actors;
     this._restriction = data.restriction;
-
-
     this._userRating = data.userRating;
     this._userDate = data.userDate;
-
     this._isOnWatchlist = data.isOnWatchlist;
     this._isWatched = data.isWatched;
     this._isFavorite = data.isFavorite;
-
     this._onCloseClick = this._onCloseClick.bind(this);
     this._onEscPress = this._onEscPress.bind(this);
     this._onEmojiChange = this._onEmojiChange.bind(this);
@@ -37,7 +33,6 @@ export default class Popup extends Component {
     this._onWatchlistChange = this._onWatchlistChange.bind(this);
     this._onWatchedChange = this._onWatchedChange.bind(this);
     this._onFavoriteChange = this._onFavoriteChange.bind(this);
-
     this._onClose = null;
   }
 

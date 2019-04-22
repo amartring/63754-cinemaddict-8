@@ -6,11 +6,8 @@ import Statistic from './statistic';
 import Search from './search';
 import API from './api';
 import {filters} from './data';
-import {HIDDEN_CLASS, VISIBLE_FILMS_NUMBER, Message, Rating} from './constants';
+import {HIDDEN_CLASS, VISIBLE_FILMS_NUMBER, AUTHORIZATION, END_POINT, Message, Rating} from './constants';
 import {filterFilms, searchFilms} from './filter-films';
-
-const AUTHORIZATION = `Basic dXNlckBwYXNzd35yZAo=${Math.random()}`;
-const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
 
 const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 
@@ -223,5 +220,3 @@ api.getFilms()
 
 statsLink.addEventListener(`click`, onStatsClick);
 filmsLoader.addEventListener(`click`, onLoaderClick);
-
-// console.log(api.getFilms());

@@ -1,17 +1,14 @@
 import Component from './component';
+import {FilterName} from './constants';
 
 export default class Filter extends Component {
   constructor(data) {
     super();
     this._name = data.name;
-
     this._id = this._name.toLowerCase().split(` `).slice(0, 1);
     this._count = 0;
-
     this._isActive = false;
-
     this._onFilterClick = this._onFilterClick.bind(this);
-
     this._onFilter = null;
   }
 
@@ -32,10 +29,10 @@ export default class Filter extends Component {
     return `
     <span>
       <a href="#${this._id}"
-        class="main-navigation__item ${this._isActive || this._name === `All movies` ? ` main-navigation__item--active` : ``}">
+        class="main-navigation__item ${this._isActive || this._name === FilterName.all ? ` main-navigation__item--active` : ``}">
         ${this._name}
         <span
-          class="main-navigation__item-count ${this._count === 0 || this._name === `All movies` ? ` visually-hidden` : ``}"
+          class="main-navigation__item-count ${this._count === 0 || this._name === FilterName.all ? ` visually-hidden` : ``}"
           id="${this._id}">
             ${this._count}
         </span>

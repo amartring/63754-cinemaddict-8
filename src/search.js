@@ -3,9 +3,7 @@ import Component from './component';
 export default class Search extends Component {
   constructor() {
     super();
-
     this._onSearchInput = this._onSearchInput.bind(this);
-
     this._onSearch = null;
   }
 

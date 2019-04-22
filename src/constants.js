@@ -49,8 +49,21 @@ export const DateFormate = {
   POPUP: `DD MMMM YYYY`,
 };
 
+export const Method = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
+};
+
+export const StatusCode = {
+  SUCCESS: 200,
+  REDIRECTION: 300,
+};
+
+export const URL = `movies`;
 export const HIDDEN_CLASS = `visually-hidden`;
-
 export const VISIBLE_FILMS_NUMBER = 5;
-
 export const MS_PER_MINUTE = 60000;
+export const AUTHORIZATION = `Basic dXNlckBwYXNzd35yZAo=${Math.random()}`;
+export const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
