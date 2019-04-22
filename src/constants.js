@@ -19,6 +19,14 @@ export const FilterName = {
   favorites: `Favorites`,
 };
 
+export const StatsFilterName = {
+  all: `all-time`,
+  today: `today`,
+  week: `week`,
+  month: `month`,
+  year: `year`,
+};
+
 export const Rating = {
   low: {
     minCount: 1,
@@ -36,8 +44,13 @@ export const Rating = {
   },
 };
 
+export const DateFormate = {
+  STATS: `D MMMM YYYY`,
+  POPUP: `DD MMMM YYYY`,
+};
+
 export const HIDDEN_CLASS = `visually-hidden`;
 
 export const VISIBLE_FILMS_NUMBER = 5;
 
-export const msPerMinute = 60000;
+export const MS_PER_MINUTE = 60000;

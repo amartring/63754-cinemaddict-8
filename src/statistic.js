@@ -1,9 +1,10 @@
-import Chart from 'chart';
+import Chart from 'chart.js';
 import Component from './component';
 import moment from 'moment';
 import {createElement} from './create-element';
 import {objectToSortedArray, rank} from './util';
 import {getChart} from './get-chart';
+import {StatsFilterName, DateFormate, MS_PER_MINUTE} from './constants';
 
 export default class Statistic extends Component {
   constructor(data) {
@@ -19,26 +20,26 @@ export default class Statistic extends Component {
   _filterByTime(filterValue) {
     let filteredFilms = this._watchedFilms;
     switch (filterValue) {
-      case `all-time`:
+      case StatsFilterName.all:
         filteredFilms = this._watchedFilms;
         break;
 
-      case `today`:
+      case StatsFilterName.today:
         filteredFilms = this._watchedFilms.filter((it) =>
-          moment(it.userDate).format(`D MMMM YYYY`) === moment().format(`D MMMM YYYY`));
+          moment(it.userDate).format(DateFormate.STATS) === moment().format(DateFormate.STATS));
         break;
 
-      case `week`:
+      case StatsFilterName.week:
         filteredFilms = this._watchedFilms.filter((it) =>
           moment(it.userDate).isAfter(moment().subtract(7, `days`)));
         break;
 
-      case `month`:
+      case StatsFilterName.month:
         filteredFilms = this._watchedFilms.filter((it) =>
           moment(it.userDate).isAfter(moment().subtract(1, `months`)));
         break;
 
-      case `year`:
+      case StatsFilterName.year:
         filteredFilms = this._watchedFilms.filter((it) =>
           moment(it.userDate).isAfter(moment().subtract(1, `year`)));
         break;
@@ -67,8 +68,8 @@ export default class Statistic extends Component {
     const [genresLabels, genresCounts] = this._filterByGenre(films);
 
     const statsWrapper = this._element.querySelector(`.statistic__chart`);
-    const BAR_HEIGHT = 50;
-    statsWrapper.height = BAR_HEIGHT * genresLabels.length;
+    const barHeight = 50;
+    statsWrapper.height = barHeight * genresLabels.length;
 
     this._genreChart = new Chart(statsWrapper, getChart());
 
@@ -101,9 +102,9 @@ export default class Statistic extends Component {
     const allDurations = films.map((it) => it.duration);
     const totalDuration = allDurations === 0 ? 0 : allDurations.reduce((it, next) => it + next);
     return `
-      ${moment.duration(totalDuration * 1000 * 60).hours()}
+      ${moment.duration(totalDuration * MS_PER_MINUTE).hours()}
       <span class="statistic__item-description">h</span>
-      ${moment.duration(totalDuration * 1000 * 60).minutes()}
+      ${moment.duration(totalDuration * MS_PER_MINUTE).minutes()}
       <span class="statistic__item-description">m</span>
     `;
   }

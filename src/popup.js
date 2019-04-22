@@ -1,6 +1,6 @@
 import Component from './component';
 import moment from 'moment';
-import {Message, KeyCode, msPerMinute} from './constants';
+import {Message, KeyCode, DateFormate, MS_PER_MINUTE} from './constants';
 
 export default class Popup extends Component {
   constructor(data) {
@@ -217,11 +217,11 @@ export default class Popup extends Component {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${moment(this._date).format(`DD MMMM YYYY`)} (${this._country})</td>
+                <td class="film-details__cell">${moment(this._date).format(DateFormate.POPUP)} (${this._country})</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${Math.floor(moment.duration(this._duration * msPerMinute).asMinutes())} min</td>
+                <td class="film-details__cell">${Math.floor(moment.duration(this._duration * MS_PER_MINUTE).asMinutes())} min</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
