@@ -18,6 +18,13 @@ export const getCommentedFilms = (data) => {
     .sort((left, right) => right.comments.length - left.comments.length).slice(0, 2);
 };
 
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+  return newElement.firstChild;
+};
+
+
 export const rank = {
   'Comedy': `Harley Quinn`,
   'Thriller': `Thrill-seeker`,

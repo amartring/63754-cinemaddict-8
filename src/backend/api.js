@@ -1,6 +1,6 @@
-import Component from './component';
+import Component from '../component';
 import ModelFilm from './model-film';
-import {Method, StatusCode, URL} from './constants';
+import {Method, StatusCode, URL} from '../constants';
 
 const checkStatus = (response) => {
   return response.status >= StatusCode.SUCCESS && response.status < StatusCode.REDIRECTION

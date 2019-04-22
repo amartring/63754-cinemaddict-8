@@ -1,4 +1,4 @@
-import {createElement} from './create-element';
+import {createElement} from './util';
 
 export default class Component {
   constructor() {

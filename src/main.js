@@ -1,6 +1,6 @@
 import Film from './films/film';
 import FilmExtra from './films/film-extra';
-import API from './api';
+import API from './backend/api';
 import {renderFilms} from './films/setup-films';
 import {renderSearch} from './search/setup-search';
 import {renderStatistic} from './statistic/setup-satistic';
