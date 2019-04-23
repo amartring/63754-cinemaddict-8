@@ -1,4 +1,4 @@
-import {createElement} from './create-element.js';
+import {createElement} from './util';
 
 export default class Component {
   constructor() {
@@ -15,6 +15,10 @@ export default class Component {
 
   get element() {
     return this._element;
+  }
+
+  isFunction(fn) {
+    return typeof fn === `function` && fn();
   }
 
   bind() {}

@@ -1,192 +1,21 @@
-import Film from './film.js';
-import FilmExtra from './film-extra.js';
-import Popup from './popup.js';
-import Filter from './filter.js';
-import Statistic from './statistic.js';
-import API from './api.js';
-import {filters} from './data.js';
-import {HIDDEN_CLASS, VISIBLE_FILMS_NUMBER, Message, Rating} from './constants.js';
-import {filterFilms, searchFilms} from './filter-films.js';
+import Film from './films/film';
+import FilmExtra from './films/film-extra';
+import API from './backend/api';
+import {renderFilms} from './films/setup-films';
+import {renderSearch} from './search/setup-search';
+import {renderStatistic} from './statistic/setup-satistic';
+import filters from './filters/filters-data';
+import {renderFilters} from './filters/setup-filters';
+import {updateRating, setupFooterStats, setupFilmsLoader, hideExtraFilms} from './setup-main';
+import {getRatedFilms, getCommentedFilms, filmsContainer, messageContainer} from './util';
+import {HIDDEN_CLASS, AUTHORIZATION, END_POINT, Message} from './constants';
 
-const AUTHORIZATION = `Basic dXNlckBwYXNzd35yZAo=${Math.random()}`;
-const END_POINT = `https://es8-demo-srv.appspot.com/moowle`;
+export const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 
-const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
-
-const body = document.querySelector(`body`);
-const filtersContainer = body.querySelector(`.main-navigation`);
-const filmsContainer = body.querySelector(`.films`);
 const filmLists = filmsContainer.querySelectorAll(`.films-list__container`);
-const filmsLoader = filmsContainer.querySelector(`.films-list__show-more`);
-const statsLink = body.querySelector(`.main-navigation__item--additional`);
-const statsContainer = body.querySelector(`.statistic`);
-const messageContainer = document.querySelector(`.films-list__title`);
-const footerStats = document.querySelector(`.footer__statistics p`);
-const headerRating = document.querySelector(`.profile__rating`);
-const searchFild = document.querySelector(`.search__field`);
-
-const mainList = filmLists[0];
+export const mainList = filmLists[0];
 const ratedList = filmLists[1];
 const commentedList = filmLists[2];
-
-const setupFilmsLoader = function () {
-  const invisibleFilms = mainList.querySelectorAll(`.film-card.${HIDDEN_CLASS}`);
-  return invisibleFilms.length === 0
-    ? filmsLoader.classList.add(HIDDEN_CLASS)
-    : filmsLoader.classList.remove(HIDDEN_CLASS);
-};
-
-const hideExtraFilms = () => {
-  const films = mainList.querySelectorAll(`.film-card`);
-  films.forEach((task, index) => {
-    return index >= VISIBLE_FILMS_NUMBER && task.classList.add(HIDDEN_CLASS);
-  });
-};
-
-const onLoaderClick = () => {
-  const invisibleFilms = mainList.querySelectorAll(`.film-card.${HIDDEN_CLASS}`);
-  for (let i = 0; i < invisibleFilms.length && i < VISIBLE_FILMS_NUMBER; i++) {
-    invisibleFilms[i].classList.remove(HIDDEN_CLASS);
-  }
-  setupFilmsLoader();
-};
-
-
-const getRatedFilms = (data) => {
-  return data.slice()
-    .sort((left, right) => Number(right.totalRating) - Number(left.totalRating)).slice(0, 2);
-};
-
-const getCommentedFilms = (data) => {
-  return data.slice()
-    .sort((left, right) => right.comments.length - left.comments.length).slice(0, 2);
-};
-
-const renderFilms = (data, FilmConstructor, container) => {
-  data.forEach((item) => {
-    const filmComponent = new FilmConstructor(item);
-
-    filmComponent.onClick = (newObj) => {
-      const popupComponent = new Popup(item);
-      popupComponent.update((Object.assign(item, newObj)));
-
-      popupComponent.onClose = (newObject) => {
-        item = Object.assign(item, newObject);
-
-        api.updateFilms({id: item.id, data: item.toRAW()})
-        .then((newFilm) => {
-          // editTaskComponent.unblock();
-          filmComponent.update(newFilm);
-          popupComponent.update(newFilm);
-          body.removeChild(popupComponent.element);
-          popupComponent.unrender();
-        })
-        .catch(() => {
-          // editTaskComponent.shake();
-          // editTaskComponent.unblock();
-        });
-      };
-
-      popupComponent.render();
-      body.appendChild(popupComponent.element);
-    };
-
-    filmComponent.onAddToWatchList = (newObj) => {
-      filmComponent.update((Object.assign(item, newObj)));
-      updateFilterCount(`#watchlist`, filmComponent._isOnWatchlist);
-    };
-
-    filmComponent.onMarkAsWatched = (newObj) => {
-      filmComponent.update((Object.assign(item, newObj)));
-      updateFilterCount(`#history`, filmComponent._isWatched);
-      updateRating();
-    };
-
-    filmComponent.onMarkAsFavorite = (newObj) => {
-      filmComponent.update((Object.assign(item, newObj)));
-      updateFilterCount(`#favorites`, filmComponent._isFavorite);
-    };
-
-    container.appendChild(filmComponent.render());
-  });
-};
-
-const updateFilterCount = (id, state) => {
-  let count = +(document.querySelector(id).textContent);
-  state ? count++ : count--;
-  document.querySelector(id).textContent = count;
-  count ? document.querySelector(id).classList.remove(HIDDEN_CLASS) : document.querySelector(id).classList.add(HIDDEN_CLASS);
-};
-
-const updateRating = () => {
-  const count = +(document.querySelector(`#history`).textContent);
-  if (count >= Rating.low.minCount && count <= Rating.low.maxCount) {
-    headerRating.textContent = Rating.low.name;
-  } else if (count >= Rating.medium.minCount && count <= Rating.medium.maxCount) {
-    headerRating.textContent = Rating.medium.name;
-  } else if (count >= Rating.high.minCount) {
-    headerRating.textContent = Rating.high.name;
-  }
-};
-
-const renderFilters = (filtersData, filmsData) => {
-  filtersData.reverse().forEach((item) => {
-    const filterComponent = new Filter(item);
-    let filteredFilms = filterFilms(filmsData, filterComponent._name);
-    filterComponent.getCount(filteredFilms.length);
-
-    filterComponent.onFilter = () => {
-      filmsContainer.classList.remove(HIDDEN_CLASS);
-      statsContainer.classList.add(HIDDEN_CLASS);
-      messageContainer.classList.add(HIDDEN_CLASS);
-      filteredFilms = filterFilms(filmsData, filterComponent._name);
-      filterComponent.update(filteredFilms.length);
-      mainList.innerHTML = ``;
-      if (filteredFilms.length === 0) {
-        messageContainer.textContent = Message.FILTER;
-        messageContainer.classList.remove(HIDDEN_CLASS);
-      }
-      renderFilms(filteredFilms, Film, mainList);
-      hideExtraFilms();
-      setupFilmsLoader();
-    };
-
-    filtersContainer.insertAdjacentElement(`afterbegin`, filterComponent.render());
-  });
-};
-
-const setupFooterStats = () => {
-  const filmsCount = mainList.querySelectorAll(`.film-card`).length;
-  footerStats.textContent = `${filmsCount} movie${filmsCount === 1 ? `` : `s`} inside`;
-};
-
-const onSearchInput = (evt) => {
-  const target = evt.target;
-  mainList.innerHTML = ``;
-  api.getFilms()
-    .then((films) => {
-      const filteredFilms = searchFilms(films, target.value);
-      messageContainer.classList.add(HIDDEN_CLASS);
-      renderFilms(filteredFilms, Film, mainList);
-      hideExtraFilms();
-      setupFilmsLoader();
-      if (filteredFilms.length === 0) {
-        messageContainer.classList.remove(HIDDEN_CLASS);
-        messageContainer.textContent = Message.SEARCH;
-      }
-    });
-};
-
-const renderStatistic = (data) => {
-  statsContainer.innerHTML = ``;
-  const statsComponent = new Statistic(data);
-  statsContainer.appendChild(statsComponent.render());
-};
-
-const onStatsClick = () => {
-  filmsContainer.classList.add(HIDDEN_CLASS);
-  statsContainer.classList.remove(HIDDEN_CLASS);
-};
 
 const showLoadingMessage = (text) => {
   messageContainer.classList.remove(HIDDEN_CLASS);
@@ -208,16 +37,11 @@ api.getFilms()
     renderFilms(getRatedFilms(films), FilmExtra, ratedList);
     renderFilms(getCommentedFilms(films), FilmExtra, commentedList);
     renderFilters(filters, films);
+    renderSearch();
     renderStatistic(films);
     setupFooterStats();
-    updateRating();
+    updateRating(films);
   })
   .catch(() => {
     showLoadingMessage(Message.ERROR);
   });
-
-statsLink.addEventListener(`click`, onStatsClick);
-filmsLoader.addEventListener(`click`, onLoaderClick);
-searchFild.addEventListener(`input`, onSearchInput);
-
-// console.log(api.getFilms());

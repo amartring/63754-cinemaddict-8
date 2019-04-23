@@ -1,5 +1,6 @@
-import Component from './component.js';
+import Component from '../component';
 import moment from 'moment';
+import {Message, KeyCode, DateFormate, MS_PER_MINUTE} from '../constants';
 
 export default class Popup extends Component {
   constructor(data) {
@@ -18,46 +19,31 @@ export default class Popup extends Component {
     this._writers = data.writers;
     this._actors = data.actors;
     this._restriction = data.restriction;
-
-
     this._userRating = data.userRating;
     this._userDate = data.userDate;
-
-    this._isOnWatchlist = false;
-    this._isWatched = false;
-    this._isFavorite = false;
-
+    this._isOnWatchlist = data.isOnWatchlist;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
     this._onCloseClick = this._onCloseClick.bind(this);
     this._onEscPress = this._onEscPress.bind(this);
     this._onEmojiChange = this._onEmojiChange.bind(this);
     this._onCommentAdd = this._onCommentAdd.bind(this);
+    this._onCommentDelete = this._onCommentDelete.bind(this);
     this._onRatingChange = this._onRatingChange.bind(this);
     this._onWatchlistChange = this._onWatchlistChange.bind(this);
     this._onWatchedChange = this._onWatchedChange.bind(this);
     this._onFavoriteChange = this._onFavoriteChange.bind(this);
-
     this._onClose = null;
   }
 
-  _processForm(formData) {
-    const entry = {
+  _processForm() {
+    return {
       userRating: ``,
       comments: this._comments,
       isOnWatchlist: this._isOnWatchlist,
       isWatched: this._isWatched,
       isFavorite: this._isFavorite,
     };
-
-    const popupMapper = Popup.createMapper(entry);
-
-    for (const pair of formData.entries()) {
-      const [property, value] = pair;
-      if (popupMapper[property]) {
-        popupMapper[property](value);
-      }
-    }
-
-    return entry;
   }
 
   _partialUpdate() {
@@ -65,6 +51,36 @@ export default class Popup extends Component {
     const oldElement = this._element;
     this._element = this.render();
     oldElement.parentNode.replaceChild(this._element, oldElement);
+  }
+
+  _addNewComment() {
+    const commentsList = this._element.querySelector(`.film-details__comments-list`);
+    const commentField = this._element.querySelector(`.film-details__comment-input`);
+    const newComment = {};
+    newComment.comment = commentField.value;
+    newComment.author = `Super Duper Alice Cooper`;
+    newComment.emotion = this._element.querySelector(`.film-details__emoji-item:checked`).value;
+    newComment.date = moment().toDate();
+
+    this._comments.push(newComment);
+    this._element.querySelector(`.film-details__add-emoji`).checked = false;
+    commentField.value = ``;
+
+    commentsList.innerHTML = this._getCommentsTemplate();
+    this._partialUpdate();
+    this._element.querySelector(`.film-details__watched-reset`).classList.remove(`visually-hidden`);
+    this._element.querySelector(`.film-details__watched-status`).textContent = Message.COMMENT_ADD;
+  }
+
+  _deleteComment() {
+    const commentsList = this._element.querySelector(`.film-details__comments-list`);
+    const comment = this._comments.reverse().find((it) => it.author === `Super Duper Alice Cooper`);
+    const index = this._comments.indexOf(comment);
+    this._comments.splice(index, 1);
+    commentsList.innerHTML = this._getCommentsTemplate();
+    this._partialUpdate();
+    this._element.querySelector(`.film-details__watched-reset`).classList.add(`visually-hidden`);
+    this._element.querySelector(`.film-details__watched-status`).textContent = Message.COMMENT_DELETE;
   }
 
   _getEmoji(emo) {
@@ -82,22 +98,14 @@ export default class Popup extends Component {
   }
 
   _onCommentAdd(evt) {
-    const commentsList = this._element.querySelector(`.film-details__comments-list`);
     const commentField = this._element.querySelector(`.film-details__comment-input`);
-    if ((evt.ctrlKey || evt.metaKey) && evt.keyCode === 13 && commentField.value) {
-      const newComment = {};
-      newComment.comment = commentField.value;
-      newComment.author = `Super Duper Alice Cooper`;
-      newComment.emotion = this._element.querySelector(`.film-details__emoji-item:checked`).value;
-      newComment.date = moment().toDate();
-
-      this._comments.push(newComment);
-      this._element.querySelector(`.film-details__add-emoji`).checked = false;
-      commentField.value = ``;
-
-      commentsList.innerHTML = this._getCommentsTemplate();
-      this._partialUpdate();
+    if ((evt.ctrlKey || evt.metaKey) && evt.keyCode === KeyCode.ENTER && commentField.value) {
+      this._addNewComment();
     }
+  }
+
+  _onCommentDelete() {
+    this._deleteComment();
   }
 
   _onRatingChange() {
@@ -105,17 +113,20 @@ export default class Popup extends Component {
     this._element.querySelector(`.film-details__user-rating span`).innerHTML = this._userRating;
   }
 
-  _onWatchlistChange() {
+  _onWatchlistChange(evt) {
+    evt.preventDefault();
     this._isOnWatchlist = !this._isOnWatchlist;
     this._partialUpdate();
   }
 
-  _onWatchedChange() {
+  _onWatchedChange(evt) {
+    evt.preventDefault();
     this._isWatched = !this._isWatched;
     this._partialUpdate();
   }
 
-  _onFavoriteChange() {
+  _onFavoriteChange(evt) {
+    evt.preventDefault();
     this._isFavorite = !this._isFavorite;
     this._partialUpdate();
   }
@@ -124,22 +135,26 @@ export default class Popup extends Component {
     evt.preventDefault();
     const formData = new FormData(this._element.querySelector(`.film-details__inner`));
     const newData = this._processForm(formData);
-    if (typeof this._onClose === `function`) {
-      this._onClose(newData);
-    }
+    this.isFunction(this._onClose(newData));
     this.update(newData);
   }
 
   _onEscPress(evt) {
-    if (evt.keyCode === 27) {
-      evt.preventDefault();
-      const formData = new FormData(this._element.querySelector(`.film-details__inner`));
-      const newData = this._processForm(formData);
-      if (typeof this._onClose === `function`) {
-        this._onClose(newData);
-      }
-      this.update(newData);
+    if (evt.keyCode === KeyCode.ESC) {
+      this._onCloseClick(evt);
     }
+  }
+
+  set onAddToWatchList(fn) {
+    this._onAddToWatchList = fn;
+  }
+
+  set onMarkAsWatched(fn) {
+    this._onMarkAsWatched = fn;
+  }
+
+  set onMarkAsFavorite(fn) {
+    this._onMarkAsFavorite = fn;
   }
 
   set onClose(fn) {
@@ -202,11 +217,11 @@ export default class Popup extends Component {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${moment(this._date).format(`DD MMMM YYYY`)} (${this._country})</td>
+                <td class="film-details__cell">${moment(this._date).format(DateFormate.POPUP)} (${this._country})</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${Math.floor(moment.duration(this._duration * 1000 * 60).asMinutes())} min</td>
+                <td class="film-details__cell">${Math.floor(moment.duration(this._duration * MS_PER_MINUTE).asMinutes())} min</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
@@ -225,16 +240,16 @@ export default class Popup extends Component {
         </div>
 
         <section class="film-details__controls">
-          <input type="checkbox" class="film-details__control-input visually-hidden"
-          id="watchlist" name="watchlist" ${this._isOnWatchlist && `checked`}>
-          <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="toWatchlist" name="watchlist"
+          ${this._isOnWatchlist && `checked`}>
+          <label for="toWatchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
-          <input type="checkbox" class="film-details__control-input visually-hidden"
-          id="watched" name="watched" ${this._isWatched && `checked`}>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched"
+          ${this._isWatched && `checked`}>
           <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-          <input type="checkbox" class="film-details__control-input visually-hidden"
-          id="favorite" name="favorite"  ${this._isFavorite && `checked`}>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite"
+          ${this._isFavorite && `checked`}>
           <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
         </section>
 
@@ -271,11 +286,8 @@ export default class Popup extends Component {
 
         <section class="film-details__user-rating-wrap">
           <div class="film-details__user-rating-controls">
-            <span
-              class="film-details__watched-status">
-                ${this._isWatched ? `Already watched` : `Will watch`}
-            </span>
-            <button class="film-details__watched-reset" type="button">undo</button>
+            <span class="film-details__watched-status"></span>
+            <button class="film-details__watched-reset visually-hidden" type="button">undo</button>
           </div>
 
           <div class="film-details__user-score">
@@ -341,15 +353,13 @@ export default class Popup extends Component {
         .addEventListener(`click`, this._onEmojiChange);
     this._element.querySelector(`.film-details__new-comment`)
         .addEventListener(`keydown`, this._onCommentAdd);
+    this._element.querySelector(`.film-details__watched-reset`)
+        .addEventListener(`click`, this._onCommentDelete);
     this._element.querySelector(`.film-details__user-rating-score`)
         .addEventListener(`click`, this._onRatingChange);
-
-    this._element.querySelector(`#watchlist`)
-        .addEventListener(`click`, this._onWatchlistChange);
-    this._element.querySelector(`#watched`)
-        .addEventListener(`click`, this._onWatchedChange);
-    this._element.querySelector(`#favorite`)
-        .addEventListener(`click`, this._onFavoriteChange);
+    this._element.querySelector(`#toWatchlist`).addEventListener(`click`, this._onWatchlistChange);
+    this._element.querySelector(`#watched`).addEventListener(`click`, this._onWatchedChange);
+    this._element.querySelector(`#favorite`).addEventListener(`click`, this._onFavoriteChange);
   }
 
   unbind() {
@@ -360,15 +370,13 @@ export default class Popup extends Component {
         .removeEventListener(`click`, this._onEmojiChange);
     this._element.querySelector(`.film-details__new-comment`)
         .removeEventListener(`keydown`, this._onCommentAdd);
+    this._element.querySelector(`.film-details__watched-reset`)
+        .removeEventListener(`click`, this._onCommentDelete);
     this._element.querySelector(`.film-details__user-rating-score`)
         .removeEventListener(`click`, this._onRatingChange);
-
-    this._element.querySelector(`#watchlist`)
-        .removeEventListener(`click`, this._onWatchlistChange);
-    this._element.querySelector(`#watched`)
-        .removeEventListener(`click`, this._onWatchedChange);
-    this._element.querySelector(`#favorite`)
-        .removeEventListener(`click`, this._onFavoriteChange);
+    this._element.querySelector(`#toWatchlist`).removeEventListener(`click`, this._onWatchlistChange);
+    this._element.querySelector(`#watched`).removeEventListener(`click`, this._onWatchedChange);
+    this._element.querySelector(`#favorite`).removeEventListener(`click`, this._onFavoriteChange);
   }
 
   update(data) {
@@ -376,13 +384,5 @@ export default class Popup extends Component {
     this._isOnWatchlist = data.isOnWatchlist;
     this._isWatched = data.isWatched;
     this._isFavorite = data.isFavorite;
-  }
-
-  static createMapper(target) {
-    return {
-      score: (value) => {
-        target.userRating = parseInt(value, 10);
-      },
-    };
   }
 }

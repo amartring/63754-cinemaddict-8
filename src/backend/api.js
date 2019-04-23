@@ -1,19 +1,11 @@
-import Component from './component.js';
-import ModelFilm from './model-film.js';
-
-const Method = {
-  GET: `GET`,
-  POST: `POST`,
-  PUT: `PUT`,
-  DELETE: `DELETE`
-};
+import Component from '../component';
+import ModelFilm from './model-film';
+import {Method, StatusCode, URL} from '../constants';
 
 const checkStatus = (response) => {
-  if (response.status >= 200 && response.status < 300) {
-    return response;
-  } else {
-    throw new Error(`${response.status}: ${response.statusText}`);
-  }
+  return response.status >= StatusCode.SUCCESS && response.status < StatusCode.REDIRECTION
+    ? response
+    : new Error(`${response.status}: ${response.statusText}`);
 };
 
 const toJSON = (response) => {
@@ -28,14 +20,14 @@ export default class API extends Component {
   }
 
   getFilms() {
-    return this._load({url: `movies`})
+    return this._load({url: URL})
       .then(toJSON)
       .then(ModelFilm.parseFilms);
   }
 
   createFilms({film}) {
     return this._load({
-      url: `movies`,
+      url: URL,
       method: Method.POST,
       body: JSON.stringify(film),
       headers: new Headers({'Content-Type': `application/json`})
@@ -44,9 +36,9 @@ export default class API extends Component {
       .then(ModelFilm.parseFilm);
   }
 
-  updateFilms({id, data}) {
+  updateFilm({id, data}) {
     return this._load({
-      url: `movies/${id}`,
+      url: `${URL}/${id}`,
       method: Method.PUT,
       body: JSON.stringify(data),
       headers: new Headers({'Content-Type': `application/json`})
@@ -55,8 +47,8 @@ export default class API extends Component {
       .then(ModelFilm.parseFilm);
   }
 
-  deleteFilms({id}) {
-    return this._load({url: `movies/${id}`, method: Method.DELETE});
+  deleteFilm({id}) {
+    return this._load({url: `${URL}/${id}`, method: Method.DELETE});
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {

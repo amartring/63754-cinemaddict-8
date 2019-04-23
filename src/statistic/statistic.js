@@ -1,49 +1,41 @@
+import Component from '../component';
 import Chart from 'chart.js';
-import Component from './component.js';
 import moment from 'moment';
-import {createElement} from './create-element.js';
-import {objectToSortedArray, rank} from './util.js';
-import {getChart} from './get-chart.js';
+import {getChart} from './get-chart';
+import {objectToSortedArray, rank, createElement} from '../util';
+import {StatsFilterName, DateFormate, MS_PER_MINUTE} from '../constants';
 
 export default class Statistic extends Component {
   constructor(data) {
     super();
     this._films = data;
     this._watchedFilms = data.filter((it) => it.isWatched);
-
     this._onFilterChange = this._onFilterChange.bind(this);
-
     this._onFilter = null;
   }
 
   _filterByTime(filterValue) {
-    let filteredFilms = this._watchedFilms;
     switch (filterValue) {
-      case `all-time`:
-        filteredFilms = this._watchedFilms;
-        break;
+      case StatsFilterName.all:
+        return this._watchedFilms;
 
-      case `today`:
-        filteredFilms = this._watchedFilms.filter((it) =>
-          moment(it.userDate).format(`D MMMM YYYY`) === moment().format(`D MMMM YYYY`));
-        break;
+      case StatsFilterName.today:
+        return this._watchedFilms.filter((it) =>
+          moment(it.userDate).format(DateFormate.STATS) === moment().format(DateFormate.STATS));
 
-      case `week`:
-        filteredFilms = this._watchedFilms.filter((it) =>
+      case StatsFilterName.week:
+        return this._watchedFilms.filter((it) =>
           moment(it.userDate).isAfter(moment().subtract(7, `days`)));
-        break;
 
-      case `month`:
-        filteredFilms = this._watchedFilms.filter((it) =>
+      case StatsFilterName.month:
+        return this._watchedFilms.filter((it) =>
           moment(it.userDate).isAfter(moment().subtract(1, `months`)));
-        break;
 
-      case `year`:
-        filteredFilms = this._watchedFilms.filter((it) =>
+      case StatsFilterName.year:
+        return this._watchedFilms.filter((it) =>
           moment(it.userDate).isAfter(moment().subtract(1, `year`)));
-        break;
     }
-    return filteredFilms;
+    return this._watchedFilms;
   }
 
   _filterByGenre(films) {
@@ -67,8 +59,8 @@ export default class Statistic extends Component {
     const [genresLabels, genresCounts] = this._filterByGenre(films);
 
     const statsWrapper = this._element.querySelector(`.statistic__chart`);
-    const BAR_HEIGHT = 50;
-    statsWrapper.height = BAR_HEIGHT * genresLabels.length;
+    const barHeight = 50;
+    statsWrapper.height = barHeight * genresLabels.length;
 
     this._genreChart = new Chart(statsWrapper, getChart());
 
@@ -101,9 +93,9 @@ export default class Statistic extends Component {
     const allDurations = films.map((it) => it.duration);
     const totalDuration = allDurations === 0 ? 0 : allDurations.reduce((it, next) => it + next);
     return `
-      ${moment.duration(totalDuration * 1000 * 60).hours()}
+      ${moment.duration(totalDuration * MS_PER_MINUTE).hours()}
       <span class="statistic__item-description">h</span>
-      ${moment.duration(totalDuration * 1000 * 60).minutes()}
+      ${moment.duration(totalDuration * MS_PER_MINUTE).minutes()}
       <span class="statistic__item-description">m</span>
     `;
   }
@@ -124,19 +116,13 @@ export default class Statistic extends Component {
     `;
   }
 
-  _onFilterChange(evt) {
-    evt.preventDefault();
-    const target = evt.target;
-
-    target.checked = true;
-
-    const filteredDatas = this._filterByTime(target.value);
-
+  _onFilterChange() {
+    const filter = this._element.querySelector(`.statistic__filters-input:checked`).value;
+    const filteredDatas = this._filterByTime(filter);
     this._element.querySelector(`.statistic__item-text--duration`).innerHTML = this._getDurationTemplate(filteredDatas);
     this._element.querySelector(`.statistic__item-text--top-genre`).innerHTML = this._getTopGenreTemplate(filteredDatas);
     this._element.querySelector(`.statistic__item-text--count`).innerHTML = this._getWatchedTemplate(filteredDatas);
     this._element.querySelector(`.statistic__rank-label`).innerHTML = this._getRank(filteredDatas);
-
     this._genreChart.destroy();
     this._createChart(filteredDatas);
   }

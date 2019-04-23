@@ -1,4 +1,4 @@
-import Component from './component.js';
+import Component from '../component';
 import moment from 'moment';
 
 export default class FilmExtra extends Component {
@@ -13,15 +13,13 @@ export default class FilmExtra extends Component {
     this._date = data.date;
     this._duration = data.duration;
     this._genre = data.genre;
-
     this._onCommentsClick = this._onCommentsClick.bind(this);
-
     this._onClick = null;
   }
 
   _onCommentsClick(evt) {
     evt.preventDefault();
-    return typeof this._onClick === `function` && this._onClick();
+    this.isFunction(this._onClick);
   }
 
   set onClick(fn) {

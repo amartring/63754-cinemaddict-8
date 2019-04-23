@@ -1,24 +1,31 @@
-const getRandomNumber = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
+export const filmsContainer = document.querySelector(`.films`);
+export const statsContainer = document.querySelector(`.statistic`);
+export const messageContainer = document.querySelector(`.films-list__title`);
 
-const shuffleArray = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const randomNumber = Math.floor(Math.random() * (i + 1));
-    const temp = array[i];
-    array[i] = array[randomNumber];
-    array[randomNumber] = temp;
-  }
-  return array;
-};
-
-const objectToSortedArray = (object) => {
+export const objectToSortedArray = (object) => {
   const arrayOfProperties = Object.keys(object).map((key) => [key, object[key]]);
   const compare = (firstCount, secondCount) => secondCount[1] - firstCount[1];
   return arrayOfProperties.sort(compare);
 };
 
-const rank = {
+export const getRatedFilms = (data) => {
+  return data.slice()
+    .sort((left, right) => Number(right.totalRating) - Number(left.totalRating)).slice(0, 2);
+};
+
+export const getCommentedFilms = (data) => {
+  return data.slice()
+    .sort((left, right) => right.comments.length - left.comments.length).slice(0, 2);
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+  return newElement.firstChild;
+};
+
+
+export const rank = {
   'Comedy': `Harley Quinn`,
   'Thriller': `Thrill-seeker`,
   'Drama': `William Shakespeare`,
@@ -29,5 +36,3 @@ const rank = {
   'Family': `Mary Poppins`,
   'Horror': `Freddy Krueger`,
 };
-
-export {getRandomNumber, shuffleArray, objectToSortedArray, rank};
