@@ -35,6 +35,7 @@ export const renderFilms = (data, FilmConstructor, container) => {
     };
 
     filmComponent.onAddToWatchList = (newObj) => {
+      // item.isWatched = !item.isWatched;
       item = Object.assign(item, newObj);
       api.updateFilm({id: item.id, data: item.toRAW()});
       renderFilters(filters, data);
