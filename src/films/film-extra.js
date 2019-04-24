@@ -17,11 +17,6 @@ export default class FilmExtra extends Component {
     this._onClick = null;
   }
 
-  _onCommentsClick(evt) {
-    evt.preventDefault();
-    this.isFunction(this._onClick);
-  }
-
   set onClick(fn) {
     this._onClick = fn;
   }
@@ -44,6 +39,19 @@ export default class FilmExtra extends Component {
     </article>`.trim();
   }
 
+  _onCommentsClick(evt) {
+    evt.preventDefault();
+    this.isFunction(this._onClick);
+  }
+
+  update(data) {
+    this._comments = data.comments;
+    this._userRating = data.userRating;
+    this._isOnWatchlist = data.isOnWatchlist;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
+  }
+
   bind() {
     this._element.querySelector(`.film-card__comments`)
         .addEventListener(`click`, this._onCommentsClick);
@@ -53,13 +61,5 @@ export default class FilmExtra extends Component {
     this._element.querySelector(`.film-card__comments`)
         .removeEventListener(`click`, this._onCommentsClick);
     this._onClick = null;
-  }
-
-  update(data) {
-    this._comments = data.comments;
-    this._userRating = data.userRating;
-    this._isOnWatchlist = data.isOnWatchlist;
-    this._isWatched = data.isWatched;
-    this._isFavorite = data.isFavorite;
   }
 }

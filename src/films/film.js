@@ -24,46 +24,6 @@ export default class Film extends Component {
     this._onClick = null;
   }
 
-  _processForm() {
-    return {
-      comments: this._comments,
-      isOnWatchlist: this._isOnWatchlist,
-      isWatched: this._isWatched,
-      isFavorite: this._isFavorite,
-    };
-  }
-
-  _onCommentsClick(evt) {
-    evt.preventDefault();
-    const newData = this._processForm();
-    this.isFunction(this._onClick(newData));
-    this.update(newData);
-  }
-
-  _onWatchlistChange(evt) {
-    evt.preventDefault();
-    this._isOnWatchlist = !this._isOnWatchlist;
-    this._partialUpdate();
-    const newData = this._processForm();
-    this.isFunction(this._onAddToWatchList(newData));
-  }
-
-  _onWatchedChange(evt) {
-    evt.preventDefault();
-    this._isWatched = !this._isWatched;
-    this._partialUpdate();
-    const newData = this._processForm();
-    this.isFunction(this._onMarkAsWatched(newData));
-  }
-
-  _onFavoriteChange(evt) {
-    evt.preventDefault();
-    this._isFavorite = !this._isFavorite;
-    this._partialUpdate();
-    const newData = this._processForm();
-    this.isFunction(this._onMarkAsFavorite(newData));
-  }
-
   set onAddToWatchList(fn) {
     this._onAddToWatchList = fn;
   }
@@ -109,6 +69,62 @@ export default class Film extends Component {
       </article>`.trim();
   }
 
+  _processForm() {
+    return {
+      comments: this._comments,
+      isOnWatchlist: this._isOnWatchlist,
+      isWatched: this._isWatched,
+      isFavorite: this._isFavorite,
+    };
+  }
+
+  _onCommentsClick(evt) {
+    evt.preventDefault();
+    const newData = this._processForm();
+    this.isFunction(this._onClick(newData));
+    this.update(newData);
+  }
+
+  _onWatchlistChange(evt) {
+    evt.preventDefault();
+    this._isOnWatchlist = !this._isOnWatchlist;
+    this._partialUpdate();
+    const newData = this._processForm();
+    this.isFunction(this._onAddToWatchList(newData));
+  }
+
+  _onWatchedChange(evt) {
+    evt.preventDefault();
+    this._isWatched = !this._isWatched;
+    this._partialUpdate();
+    const newData = this._processForm();
+    this.isFunction(this._onMarkAsWatched(newData));
+  }
+
+  _onFavoriteChange(evt) {
+    evt.preventDefault();
+    this._isFavorite = !this._isFavorite;
+    this._partialUpdate();
+    const newData = this._processForm();
+    this.isFunction(this._onMarkAsFavorite(newData));
+  }
+
+  _partialUpdate() {
+    this._isOnWatchlist ? this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).classList.add(`film-card__controls-item--active`) : this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).classList.remove(`film-card__controls-item--active`);
+    this._isWatched ? this._element.querySelector(`.film-card__controls-item--mark-as-watched`).classList.add(`film-card__controls-item--active`) : this._element.querySelector(`.film-card__controls-item--mark-as-watched`).classList.remove(`film-card__controls-item--active`);
+    this._isFavorite ? this._element.querySelector(`.film-card__controls-item--favorite`).classList.add(`film-card__controls-item--active`) : this._element.querySelector(`.film-card__controls-item--favorite`).classList.remove(`film-card__controls-item--active`);
+    this._element.querySelector(`.film-card__comments span`).textContent = this._comments.length;
+  }
+
+  update(data) {
+    this._comments = data.comments;
+    this._userRating = data.userRating;
+    this._isOnWatchlist = data.isOnWatchlist;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
+    this._partialUpdate();
+  }
+
   bind() {
     this._element.querySelector(`.film-card__comments`)
         .addEventListener(`click`, this._onCommentsClick);
@@ -130,22 +146,5 @@ export default class Film extends Component {
     this._element.querySelector(`.film-card__controls-item--favorite`)
         .removeEventListener(`click`, this._onFavoriteChange);
     this._onClick = null;
-  }
-
-  _partialUpdate() {
-    this._isOnWatchlist ? this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).classList.add(`film-card__controls-item--active`) : this._element.querySelector(`.film-card__controls-item--add-to-watchlist`).classList.remove(`film-card__controls-item--active`);
-    this._isWatched ? this._element.querySelector(`.film-card__controls-item--mark-as-watched`).classList.add(`film-card__controls-item--active`) : this._element.querySelector(`.film-card__controls-item--mark-as-watched`).classList.remove(`film-card__controls-item--active`);
-    this._isFavorite ? this._element.querySelector(`.film-card__controls-item--favorite`).classList.add(`film-card__controls-item--active`) : this._element.querySelector(`.film-card__controls-item--favorite`).classList.remove(`film-card__controls-item--active`);
-    this._element.querySelector(`.film-card__comments span`).textContent = this._comments.length;
-  }
-
-  update(data) {
-    this._comments = data.comments;
-    this._userRating = data.userRating;
-    this._isOnWatchlist = data.isOnWatchlist;
-    this._isWatched = data.isWatched;
-    this._isFavorite = data.isFavorite;
-
-    this._partialUpdate();
   }
 }

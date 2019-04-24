@@ -7,11 +7,6 @@ export default class Search extends Component {
     this._onSearch = null;
   }
 
-  _onSearchInput(evt) {
-    evt.preventDefault();
-    this.isFunction(this._onSearch(evt));
-  }
-
   set onSearch(fn) {
     this._onSearch = fn;
   }
@@ -22,6 +17,11 @@ export default class Search extends Component {
       <input type="text" name="search" class="search__field" placeholder="Search">
       <button type="submit" class="visually-hidden">Search</button>
     </form>`.trim();
+  }
+
+  _onSearchInput(evt) {
+    evt.preventDefault();
+    this.isFunction(this._onSearch(evt));
   }
 
   bind() {

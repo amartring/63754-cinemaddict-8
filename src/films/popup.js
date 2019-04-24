@@ -36,115 +36,6 @@ export default class Popup extends Component {
     this._onClose = null;
   }
 
-  _processForm() {
-    return {
-      userRating: ``,
-      comments: this._comments,
-      isOnWatchlist: this._isOnWatchlist,
-      isWatched: this._isWatched,
-      isFavorite: this._isFavorite,
-    };
-  }
-
-  _partialUpdate() {
-    this.unbind();
-    const oldElement = this._element;
-    this._element = this.render();
-    oldElement.parentNode.replaceChild(this._element, oldElement);
-  }
-
-  _addNewComment() {
-    const commentsList = this._element.querySelector(`.film-details__comments-list`);
-    const commentField = this._element.querySelector(`.film-details__comment-input`);
-    const newComment = {};
-    newComment.comment = commentField.value;
-    newComment.author = `Super Duper Alice Cooper`;
-    newComment.emotion = this._element.querySelector(`.film-details__emoji-item:checked`).value;
-    newComment.date = moment().toDate();
-
-    this._comments.push(newComment);
-    this._element.querySelector(`.film-details__add-emoji`).checked = false;
-    commentField.value = ``;
-
-    commentsList.innerHTML = this._getCommentsTemplate();
-    this._partialUpdate();
-    this._element.querySelector(`.film-details__watched-reset`).classList.remove(`visually-hidden`);
-    this._element.querySelector(`.film-details__watched-status`).textContent = Message.COMMENT_ADD;
-  }
-
-  _deleteComment() {
-    const commentsList = this._element.querySelector(`.film-details__comments-list`);
-    const comment = this._comments.reverse().find((it) => it.author === `Super Duper Alice Cooper`);
-    const index = this._comments.indexOf(comment);
-    this._comments.splice(index, 1);
-    commentsList.innerHTML = this._getCommentsTemplate();
-    this._partialUpdate();
-    this._element.querySelector(`.film-details__watched-reset`).classList.add(`visually-hidden`);
-    this._element.querySelector(`.film-details__watched-status`).textContent = Message.COMMENT_DELETE;
-  }
-
-  _getEmoji(emo) {
-    const emoji = {
-      grinning: `😀`,
-      sleeping: `😴`,
-      neutral: `😐`,
-    };
-    return emoji[emo];
-  }
-
-  _onEmojiChange() {
-    const emoji = this._element.querySelector(`.film-details__emoji-item:checked + label`).textContent;
-    this._element.querySelector(`.film-details__add-emoji-label`).innerHTML = emoji;
-  }
-
-  _onCommentAdd(evt) {
-    const commentField = this._element.querySelector(`.film-details__comment-input`);
-    if ((evt.ctrlKey || evt.metaKey) && evt.keyCode === KeyCode.ENTER && commentField.value) {
-      this._addNewComment();
-    }
-  }
-
-  _onCommentDelete() {
-    this._deleteComment();
-  }
-
-  _onRatingChange() {
-    this._userRating = this._element.querySelector(`.film-details__user-rating-input:checked`).value;
-    this._element.querySelector(`.film-details__user-rating span`).innerHTML = this._userRating;
-  }
-
-  _onWatchlistChange(evt) {
-    evt.preventDefault();
-    this._isOnWatchlist = !this._isOnWatchlist;
-    this._partialUpdate();
-  }
-
-  _onWatchedChange(evt) {
-    evt.preventDefault();
-    this._isWatched = !this._isWatched;
-    this._partialUpdate();
-  }
-
-  _onFavoriteChange(evt) {
-    evt.preventDefault();
-    this._isFavorite = !this._isFavorite;
-    this._partialUpdate();
-  }
-
-  _onCloseClick(evt) {
-    evt.preventDefault();
-    const formData = new FormData(this._element.querySelector(`.film-details__inner`));
-    const newData = this._processForm(formData);
-    this.isFunction(this._onClose(newData));
-    this.update(newData);
-  }
-
-  _onEscPress(evt) {
-    if (evt.keyCode === KeyCode.ESC) {
-      this._onCloseClick(evt);
-    }
-  }
-
   set onAddToWatchList(fn) {
     this._onAddToWatchList = fn;
   }
@@ -159,21 +50,6 @@ export default class Popup extends Component {
 
   set onClose(fn) {
     this._onClose = fn;
-  }
-
-  _getCommentsTemplate() {
-    return this._comments.map((comment) => `
-      <li class="film-details__comment">
-        <span class="film-details__comment-emoji">${this._getEmoji(comment.emotion.split(`-`)[0])}</span>
-        <div>
-          <p class="film-details__comment-text">${comment.comment}</p>
-          <p class="film-details__comment-info">
-            <span class="film-details__comment-author">${comment.author}</span>
-            <span class="film-details__comment-day">${moment(comment.date).fromNow()}</span>
-          </p>
-        </div>
-      </li>`)
-    .join(``);
   }
 
   get template() {
@@ -301,48 +177,156 @@ export default class Popup extends Component {
               <p class="film-details__user-rating-feelings">How you feel it?</p>
 
               <div class="film-details__user-rating-score">
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden"
-                value="1" id="rating-1" ${this._userRating === 1 && `checked`}>
-                <label class="film-details__user-rating-label" for="rating-1">1</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden"
-                value="2" id="rating-2" ${this._userRating === 2 && `checked`}>
-                <label class="film-details__user-rating-label" for="rating-2">2</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden"
-                value="3" id="rating-3" ${this._userRating === 3 && `checked`}>
-                <label class="film-details__user-rating-label" for="rating-3">3</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden"
-                value="4" id="rating-4" ${this._userRating === 4 && `checked`}>
-                <label class="film-details__user-rating-label" for="rating-4">4</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden"
-                value="5" id="rating-5" ${this._userRating === 5 && `checked`}>
-                <label class="film-details__user-rating-label" for="rating-5">5</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden"
-                value="6" id="rating-6" ${this._userRating === 6 && `checked`}>
-                <label class="film-details__user-rating-label" for="rating-6">6</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden"
-                value="7" id="rating-7" ${this._userRating === 7 && `checked`}>
-                <label class="film-details__user-rating-label" for="rating-7">7</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden"
-                value="8" id="rating-8" ${this._userRating === 8 && `checked`}>
-                <label class="film-details__user-rating-label" for="rating-8">8</label>
-
-                <input type="radio" name="score" class="film-details__user-rating-input visually-hidden"
-                value="9" id="rating-9" ${this._userRating === 9 && `checked`}>
-                <label class="film-details__user-rating-label" for="rating-9">9</label>
-
+                ${this._getUserRatingTemplate()}
               </div>
             </section>
           </div>
         </section>
       </form>
     </section>`.trim();
+  }
+
+  _getCommentsTemplate() {
+    return this._comments.map((comment) => `
+      <li class="film-details__comment">
+        <span class="film-details__comment-emoji">${this._getEmoji(comment.emotion.split(`-`)[0])}</span>
+        <div>
+          <p class="film-details__comment-text">${comment.comment}</p>
+          <p class="film-details__comment-info">
+            <span class="film-details__comment-author">${comment.author}</span>
+            <span class="film-details__comment-day">${moment(comment.date).fromNow()}</span>
+          </p>
+        </div>
+      </li>`)
+    .join(``);
+  }
+
+  _getUserRatingTemplate() {
+    let result = ``;
+    for (let i = 1; i <= 9; i++) {
+      result += `
+        <input type="radio" name="score" class="film-details__user-rating-input visually-hidden"
+        value="${i}" id="rating-${i}" ${this._userRating === i && `checked`}>
+        <label class="film-details__user-rating-label" for="rating-${i}">${i}</label>
+      `;
+    }
+    return result;
+  }
+
+  _addNewComment() {
+    const commentsList = this._element.querySelector(`.film-details__comments-list`);
+    const commentField = this._element.querySelector(`.film-details__comment-input`);
+    const newComment = {};
+    newComment.comment = commentField.value;
+    newComment.author = `Super Duper Alice Cooper`;
+    newComment.emotion = this._element.querySelector(`.film-details__emoji-item:checked`).value;
+    newComment.date = moment().toDate();
+
+    this._comments.push(newComment);
+    this._element.querySelector(`.film-details__add-emoji`).checked = false;
+    commentField.value = ``;
+
+    commentsList.innerHTML = this._getCommentsTemplate();
+    this._partialUpdate();
+    this._element.querySelector(`.film-details__watched-reset`).classList.remove(`visually-hidden`);
+    this._element.querySelector(`.film-details__watched-status`).textContent = Message.COMMENT_ADD;
+  }
+
+  _deleteComment() {
+    const commentsList = this._element.querySelector(`.film-details__comments-list`);
+    const comment = this._comments.reverse().find((it) => it.author === `Super Duper Alice Cooper`);
+    const index = this._comments.indexOf(comment);
+    this._comments.splice(index, 1);
+    commentsList.innerHTML = this._getCommentsTemplate();
+    this._partialUpdate();
+    this._element.querySelector(`.film-details__watched-reset`).classList.add(`visually-hidden`);
+    this._element.querySelector(`.film-details__watched-status`).textContent = Message.COMMENT_DELETE;
+  }
+
+  _getEmoji(emo) {
+    const emoji = {
+      grinning: `😀`,
+      sleeping: `😴`,
+      neutral: `😐`,
+    };
+    return emoji[emo];
+  }
+
+  _onEmojiChange() {
+    const emoji = this._element.querySelector(`.film-details__emoji-item:checked + label`).textContent;
+    this._element.querySelector(`.film-details__add-emoji-label`).innerHTML = emoji;
+  }
+
+  _onCommentAdd(evt) {
+    const commentField = this._element.querySelector(`.film-details__comment-input`);
+    if ((evt.ctrlKey || evt.metaKey) && evt.keyCode === KeyCode.ENTER && commentField.value) {
+      this._addNewComment();
+    }
+  }
+
+  _onCommentDelete() {
+    this._deleteComment();
+  }
+
+  _onRatingChange() {
+    this._userRating = this._element.querySelector(`.film-details__user-rating-input:checked`).value;
+    this._element.querySelector(`.film-details__user-rating span`).innerHTML = this._userRating;
+  }
+
+  _onWatchlistChange(evt) {
+    evt.preventDefault();
+    this._isOnWatchlist = !this._isOnWatchlist;
+    this._partialUpdate();
+  }
+
+  _onWatchedChange(evt) {
+    evt.preventDefault();
+    this._isWatched = !this._isWatched;
+    this._partialUpdate();
+  }
+
+  _onFavoriteChange(evt) {
+    evt.preventDefault();
+    this._isFavorite = !this._isFavorite;
+    this._partialUpdate();
+  }
+
+  _onCloseClick(evt) {
+    evt.preventDefault();
+    const formData = new FormData(this._element.querySelector(`.film-details__inner`));
+    const newData = this._processForm(formData);
+    this.isFunction(this._onClose(newData));
+    this.update(newData);
+  }
+
+  _onEscPress(evt) {
+    if (evt.keyCode === KeyCode.ESC) {
+      this._onCloseClick(evt);
+    }
+  }
+
+  _processForm() {
+    return {
+      userRating: ``,
+      comments: this._comments,
+      isOnWatchlist: this._isOnWatchlist,
+      isWatched: this._isWatched,
+      isFavorite: this._isFavorite,
+    };
+  }
+
+  _partialUpdate() {
+    this.unbind();
+    const oldElement = this._element;
+    this._element = this.render();
+    oldElement.parentNode.replaceChild(this._element, oldElement);
+  }
+
+  update(data) {
+    this._userRating = data.userRating;
+    this._isOnWatchlist = data.isOnWatchlist;
+    this._isWatched = data.isWatched;
+    this._isFavorite = data.isFavorite;
   }
 
   bind() {
@@ -377,12 +361,5 @@ export default class Popup extends Component {
     this._element.querySelector(`#toWatchlist`).removeEventListener(`click`, this._onWatchlistChange);
     this._element.querySelector(`#watched`).removeEventListener(`click`, this._onWatchedChange);
     this._element.querySelector(`#favorite`).removeEventListener(`click`, this._onFavoriteChange);
-  }
-
-  update(data) {
-    this._userRating = data.userRating;
-    this._isOnWatchlist = data.isOnWatchlist;
-    this._isWatched = data.isWatched;
-    this._isFavorite = data.isFavorite;
   }
 }

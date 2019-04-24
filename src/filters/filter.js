@@ -8,15 +8,9 @@ export default class Filter extends Component {
     super();
     this._name = data.name;
     this._id = this._name.toLowerCase();
-    this._isActive = data.isActive ? true : false;
+    this._isActive = data.isActive;
     this._onFilter = null;
     this._onFilterClick = this._onFilterClick.bind(this);
-  }
-
-  _onFilterClick(evt) {
-    evt.preventDefault();
-    this._isActive = !this._isActive;
-    this.isFunction(this._onFilter);
   }
 
   set onFilter(fn) {
@@ -37,8 +31,18 @@ export default class Filter extends Component {
     </span>`.trim();
   }
 
+  _onFilterClick(evt) {
+    evt.preventDefault();
+    this._isActive = !this._isActive;
+    this.isFunction(this._onFilter);
+  }
+
   setCount(count) {
     this._element.querySelector(`.main-navigation__item-count`).textContent = `${count}`;
+  }
+
+  update(data) {
+    this._isActive = data.isActive;
   }
 
   bind() {
@@ -47,9 +51,5 @@ export default class Filter extends Component {
 
   unbind() {
     this._element.removeEventListener(`click`, this._onFilterClick);
-  }
-
-  update(data) {
-    this._isActive = data.isActive;
   }
 }
