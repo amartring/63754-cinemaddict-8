@@ -2,7 +2,6 @@ import Component from '../component';
 import {FilterName} from '../constants';
 import {HIDDEN_CLASS} from '../constants';
 
-
 export default class Filter extends Component {
   constructor(data) {
     super();
